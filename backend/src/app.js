@@ -4,6 +4,7 @@ import express, { request } from "express";
 import cors from "cors";
 import usuariosRoutes from "./routers/usuarios.routes.js"
 import usuariosLoginRoutes from "./routers/usuariosLogin.routes.js"
+import tecnologiaRoutes from "./routers/tecnologia.routes.js"
 
 /*Asignamos a app toda funcionalidad para mi server web */
 const app = express();
@@ -19,15 +20,22 @@ app.use(express.urlencoded({extended:true}));
 
 /*routers */
 app.use(cors()); 
+app.use(express.urlencoded({extended:true}));
+
 
 /*usuarios*/
 
 app.use("/Registrar", usuariosRoutes); //Registrar Usuarios clientes
 
-
 app.use("/Login", usuariosLoginRoutes); //Verificar datos del login
 
 app.use("/api/usuarios", usuariosRoutes); //Mostrar Usuarios clientes, actualizar y eliminar usuarios (desde admin)
+
+/*Productos*/
+
+app.use("/api/tecnologia", tecnologiaRoutes) //Mostrar, registrar produstos, actualizar y eliminar productos (desde admin)
+
+
 
 
 

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Enter your description here" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/Admin.css">
+    <title>AdminDasboart</title>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2><i class="fas fa-cogs"></i> Admin</h2>
+        <ul>
+            <li><a href="#productos"><i class="fas fa-box"></i> Productos</a></li>
+            <li><a href="#pedidos"><i class="fas fa-shopping-cart"></i> Pedidos</a></li>
+            <li><a href="#pagos"><i class="fas fa-credit-card"></i> Ventas</a></li>
+            <button id="btnCerrarSesion" class="btn-add">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Panel de Administración</h1>
+            <p class="mb-0">Bienvenido al sistema de gestión</p>
+        </header>
+
+        <!-- Sección Productos -->
+        <section id="productos" class="card seccion-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>Gestión de Productos</h2>
+                <button class="btn-add" id="btnAgregarProducto">
+                    <i class="fas fa-plus"></i> Agregar Producto
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>idProducto</th>
+                            <th>nombreProducto</th>
+                            <th>imagen</th>
+                            <th>valor</th>
+                            <th>cantidad</th>
+                            <th>informacion</th>
+                            <th>fecha_creacion</th>
+                            <th>pocentaje_impuesto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaProductos">
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sección Pedidos -->
+        <section id="pedidos" class="card seccion-content">
+            <h2>Gestión de Pedidos</h2>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>idPedido</th>
+                            <th>estado</th>
+                            <th>infopersona</th>
+                            <th>correo_electronico</th>
+                            <th>Direccion</th>
+                            <th>nombresProductos</th>
+                            <th>fecha_pedido</th>
+                            <th>fecha_actualizacion</th>
+                            <th>subtotal</th>
+                            <th>descuentos_totales</th>
+                            <th>impuestos_totales</th>
+                            <th>total</th>
+                            <th>idUsuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPedidos">
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Sección Pagos -->
+        <section id="pagos" class="card seccion-content">
+            <h2>Ventas Registradas</h2>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>idPago </th>
+                            <th>NombrePersona</th>
+                            <th>Direccion</th>
+                            <th>idFormaPago</th>
+                            <th>Telefono</th>
+                            <th>correo_electronico</th>
+                            <th>monto_subtotal</th>
+                            <th>descuentos</th>
+                            <th>impuestos</th>
+                            <th>monto_total</th>
+                            <th>fecha_pago</th>
+                            <th>estado_pago</th>
+                            <th>idUsuario</th>
+                            <th>idPedido</th>
+                            <th>referencia_pago</th>
+                            <th>notas_pago</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPagos">
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script type="module" src="js/Admin/productosAdmin.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Verificar sesión de administrador
+            const idUsuario = sessionStorage.getItem("idUsuario");
+            const role = sessionStorage.getItem("rol");
+
+            if (!idUsuario || role !== "admin") {
+                alert("Debes iniciar sesión como administrador para acceder a esta página.");
+                window.location.href = "login.html";
+            }
+
+            // Manejar clic en botón de cerrar sesión
+            $('#btnCerrarSesion').click(function (e) {
+                e.preventDefault();
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    sessionStorage.clear();
+                    window.location.href = "login.html";
+                }
+            });
+        });
+    </script>
+    <!-- Modal Agregar Producto -->
+    <div class="modal fade" id="modalAgregarProducto" tabindex="-1" role="dialog"
+        aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAgregarProductoLabel">
+                        <i class="fas fa-plus-circle"></i> Agregar Nuevo Producto
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAgregarProducto">
+                        <div class="row">
+                            <!-- Columna Izquierda -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="nombreProducto">
+                                        <i class="fas fa-tag"></i> Nombre del Producto *
+                                    </label>
+                                    <input type="text" class="form-control" id="nombreProducto" name="nombreProducto"
+                                        placeholder="Ingrese el nombre del producto" required>
+                                    <small class="form-text text-muted">Nombre descriptivo del producto</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="valor">
+                                        <i class="fas fa-dollar-sign"></i> Precio *
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" class="form-control" id="valor" name="valor"
+                                            placeholder="0.00" min="0" step="0.01" required>
+                                    </div>
+                                    <small class="form-text text-muted">Precio en pesos colombianos</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cantidad">
+                                        <i class="fas fa-boxes"></i> Cantidad en Stock *
+                                    </label>
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                        placeholder="0" min="0" required>
+                                    <small class="form-text text-muted">Cantidad disponible en inventario</small>
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha -->
+                            <div class="col-md-6">
+                                <!-- Selector de imagen mejorado -->
+                                <div class="form-group">
+                                    <label for="imagen">
+                                        <i class="fas fa-image"></i> Imagen del Producto *
+                                    </label>
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="imagen" name="imagen"
+                                            accept="image/*" required>
+                                        <label class="custom-file-label" for="imagen">Seleccionar imagen...</label>
+                                    </div>
+                                    <small class="form-text text-muted">Seleccione una imagen (JPG, PNG, GIF,
+                                        WEBP)</small>
+
+                                    <!-- Preview de la imagen -->
+                                    <div class="mt-3" id="imagenPreview" style="display: none;">
+                                        <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
+                                            style="max-height: 150px; max-width: 100%;">
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <strong>Archivo seleccionado:</strong> <span id="nombreArchivo"></span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="informacion">
+                                        <i class="fas fa-info-circle"></i> Información del Producto *
+                                    </label>
+                                    <textarea class="form-control" id="informacion" name="informacion" rows="6"
+                                        placeholder="Ingrese la información detallada del producto..."
+                                        required></textarea>
+                                    <small class="form-text text-muted">Descripción completa del producto,
+                                        características, especificaciones, etc.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Información:</strong> Los campos marcados con (*) son obligatorios.
+                                    La fecha de creación y porcentaje de impuesto se asignarán automáticamente.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="limpiarFormulario()">
+                                <i class="fas fa-eraser"></i> Limpiar
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Guardar Producto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript para el modal -->
+    <script>
+        $(document).ready(function () {
+            // Activar el modal al hacer clic en "Agregar Producto"
+            $('#btnAgregarProducto').click(function () {
+                $('#modalAgregarProducto').modal('show');
+            });
+
+            // Manejar la selección de archivo
+            $('#imagen').on('change', function () {
+                const file = this.files[0];
+                const label = $(this).next('.custom-file-label');
+                const preview = $('#imagenPreview');
+                const previewImg = $('#previewImg');
+                const nombreArchivo = $('#nombreArchivo');
+
+                if (file) {
+                    // Actualizar el label con el nombre del archivo
+                    label.text(file.name);
+
+                    // Mostrar información del archivo
+                    nombreArchivo.text(file.name);
+
+                    // Validar tipo de archivo
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                    if (validTypes.includes(file.type)) {
+                        $(this).removeClass('is-invalid').addClass('is-valid');
+
+                        // Crear preview de la imagen
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.attr('src', e.target.result);
+                            preview.show();
+                        };
+                        reader.readAsDataURL(file);
+
+                    } else {
+                        $(this).addClass('is-invalid').removeClass('is-valid');
+                        preview.hide();
+                        alert('Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF, WEBP)');
+                        $(this).val('');
+                        label.text('Seleccionar imagen...');
+                    }
+                } else {
+                    label.text('Seleccionar imagen...');
+                    preview.hide();
+                }
+            });
+        });
+
+        // Limpiar formulario
+        function limpiarFormulario() {
+            $('#formAgregarProducto')[0].reset();
+            // Remover clases de validación
+            $('.form-control, .custom-file-input').removeClass('is-valid is-invalid');
+            // Limpiar preview de imagen
+            $('#imagenPreview').hide();
+            $('#previewImg').attr('src', '');
+            $('.custom-file-label').text('Seleccionar imagen...');
+        }
+
+        // Validación en tiempo real para otros campos
+        $('#nombreProducto, #valor, #cantidad, #informacion').on('input', function () {
+            if ($(this).val().trim() === '') {
+                $(this).addClass('is-invalid').removeClass('is-valid');
+            } else {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            }
+        });
+
+        // Formatear precio mientras se escribe
+        $('#valor').on('input', function () {
+            let value = $(this).val();
+            if (value < 0) {
+                $(this).val(0);
+            }
+        });
+
+        // Ejemplo de manejo del envío del formulario
+        $('#formAgregarProducto').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const archivo = $('#imagen')[0].files[0];
+
+            if (archivo) {
+                console.log('Archivo seleccionado:', archivo.name);
+                console.log('Tipo de archivo:', archivo.type);
+                console.log('Tamaño del archivo:', archivo.size, 'bytes');
+
+                // Aquí puedes enviar el FormData con el archivo a tu servidor
+                // O simplemente usar el nombre del archivo como en tu código original
+                alert('Formulario enviado con imagen: ' + archivo.name);
+            } else {
+                alert('Por favor seleccione una imagen');
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos adicionales para el modal */
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 0.8;
+        }
+
+        .modal-header .close:hover {
+            opacity: 1;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label i {
+            color: #667eea;
+            margin-right: 0.5rem;
+        }
+
+        .form-control:focus,
+        .custom-file-input:focus+.custom-file-label {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .is-valid {
+            border-color: #28a745;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+
+        .custom-file-input.is-valid+.custom-file-label {
+            border-color: #28a745;
+        }
+
+        .custom-file-input.is-invalid+.custom-file-label {
+            border-color: #dc3545;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #e3f2fd, #f0f7ff);
+            border: 1px solid #667eea;
+            color: #333;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding: 1rem 2rem;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .btn-success {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        /* Estilos para el preview de imagen */
+        #imagenPreview {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        #previewImg {
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+</body>
+
+</html>

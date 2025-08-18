@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             sessionStorage.setItem("idUsuario", usuario.idUsuario);
             sessionStorage.setItem("rol", usuario.rol);
+            
             console.log("Usuario:", usuario);                   
             if (rol === "admin") {  
 

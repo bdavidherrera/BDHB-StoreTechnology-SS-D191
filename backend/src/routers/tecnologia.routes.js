@@ -4,14 +4,12 @@ import { methodHTPP as TecnologiasController} from "../controllers/tecnologia.co
 /*Creamos el enrutador */
 const router = Router();
 
-router.post("/RegistrarProducto", );
+router.post("/RegistrarProducto", TecnologiasController.postTecnologiaProducto);
 
-router.get("/", );
+router.get("/", TecnologiasController.getTecnologiaProducto);
 
-router.put("/ActualizarProducto", );
+router.put("/ActualizarProducto", TecnologiasController.putTecnologiaProducto);
 
-router.put("/EliminarUsuario/:idusuarios", );
-
-
+router.put("/EliminarProducto/:idProducto", TecnologiasController.deleteTecnologiaProducto);
 
 export default router;
