@@ -2,11 +2,15 @@ import { obtainProductos, RegistrarProductos, actualizarProductos, eliminarProdu
 
 document.addEventListener("DOMContentLoaded", () => {
     const tablaProductosS = document.querySelector('#tablaProductos')
+    const formEditarProducto = document.querySelector('formEditarProducto')
 
     if (tablaProductosS) {
         obtenerProductos()
         configurarFormularioProducto()
         configurarSelectorImagen()
+    }
+    if(formEditarProducto){
+        
     }
 })
 
@@ -72,8 +76,6 @@ function configurarBotonesEditar() {
         });
     });
 }
-
-
 
 function configurarSelectorImagen() {
     const inputImagen = document.getElementById('imagen');
@@ -279,8 +281,6 @@ function configurarBotonesEliminar() {
     });
 }
 
-
-
 function mostrarMensaje(mensaje, tipo = 'info') {
     // Crear elemento de alerta
     const alerta = document.createElement('div');
@@ -326,4 +326,7 @@ function limpiarFormulario() {
         if (label) label.textContent = 'Seleccionar imagen...';
     }
 }
+
+
+
 
