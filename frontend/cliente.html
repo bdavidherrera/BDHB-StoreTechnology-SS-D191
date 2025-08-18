@@ -229,7 +229,6 @@
             const role = sessionStorage.getItem("rol");
 
             if (!idUsuario || role !== "cliente") {
-                // Si no hay idUsuario o el rol no es cliente, redirigir al login
                 alert("Debes iniciar sesión para acceder a esta página y ser cliente.");
                 window.location.href = "login.html";
             }

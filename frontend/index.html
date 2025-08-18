@@ -51,134 +51,9 @@
         </section>
     </main>
 
-    <!-- Cart Modal -->
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-content">
-            <div class="cart-header">
-                <h2>Carrito de Compras</h2>
-                <button class="close-cart" onclick="toggleCart()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="cartItems">
-                <!-- Cart items will be displayed here -->
-            </div>
-            <div class="cart-total">
-                <div class="total-amount">Total: $<span id="cartTotal">0</span></div>
-                <button class="checkout-btn" onclick="showCheckoutForm()">
-                    <i class="fas fa-credit-card"></i> Proceder al Pago
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Checkout Modal -->
-    <div class="checkout-modal" id="checkoutModal">
-        <div class="checkout-content">
-            <div class="checkout-header">
-                <h2>Finalizar Compra</h2>
-                <button class="close-checkout" onclick="toggleCheckout()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
 
-            <form id="checkoutForm" class="checkout-form">
-                <div class="form-section">
-                    <h3><i class="fas fa-user"></i> Información Personal</h3>
-                    <div class="form-group">
-                        <label for="fullName">Nombre Completo *</label>
-                        <input type="text" id="fullName" name="fullName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Correo Electrónico *</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                </div>
 
-                <div class="form-section">
-                    <h3><i class="fas fa-map-marker-alt"></i> Dirección de Envío</h3>
-                    <div class="form-group">
-                        <label for="address">Dirección Completa *</label>
-                        <textarea id="address" name="address" rows="3" required
-                            placeholder="Calle, número, apartamento, ciudad, código postal"></textarea>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3><i class="fas fa-credit-card"></i> Método de Pago</h3>
-                    <div class="payment-methods">
-                        <div class="payment-option">
-                            <input type="radio" id="creditCard" name="paymentMethod" value="creditCard" required>
-                            <label for="creditCard">
-                                <i class="fas fa-credit-card"></i> Tarjeta de Crédito/Débito
-                            </label>
-                        </div>
-                        <div class="payment-option">
-                            <input type="radio" id="paypal" name="paymentMethod" value="paypal">
-                            <label for="paypal">
-                                <i class="fab fa-paypal"></i> PayPal
-                            </label>
-                        </div>
-                        <div class="payment-option">
-                            <input type="radio" id="transfer" name="paymentMethod" value="transfer">
-                            <label for="transfer">
-                                <i class="fas fa-university"></i> Transferencia Bancaria
-                            </label>
-                        </div>
-                        <div class="payment-option">
-                            <input type="radio" id="cash" name="paymentMethod" value="cash">
-                            <label for="cash">
-                                <i class="fas fa-money-bill-wave"></i> Pago Contra Entrega
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section" id="cardDetails" style="display: none;">
-                    <h3><i class="fas fa-lock"></i> Detalles de Tarjeta</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="cardNumber">Número de Tarjeta</label>
-                            <input type="text" id="cardNumber" name="cardNumber" placeholder="1234 5678 9012 3456"
-                                maxlength="19">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="expiryDate">Fecha de Vencimiento</label>
-                            <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" maxlength="5">
-                        </div>
-                        <div class="form-group">
-                            <label for="cvv">CVV</label>
-                            <input type="text" id="cvv" name="cvv" placeholder="123" maxlength="4">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="checkout-summary">
-                    <div class="summary-item">
-                        <span>Subtotal:</span>
-                        <span>$<span id="checkoutSubtotal">0</span></span>
-                    </div>
-                    <div class="summary-item">
-                        <span>Envío:</span>
-                        <span>$<span id="shippingCost">15.00</span></span>
-                    </div>
-                    <div class="summary-item total">
-                        <span>Total:</span>
-                        <span>$<span id="checkoutTotal">0</span></span>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn-cancel" onclick="toggleCheckout()">Cancelar</button>
-                    <button type="submit" class="btn-confirm">
-                        <i class="fas fa-lock"></i> Confirmar Pedido
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <!-- Floating Social Buttons -->
     <div class="floating-buttons">
@@ -218,12 +93,68 @@
     </footer>
 
 
-    <script src="js/script.js"></script>
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script type="module" src="js/Admin/productosAdmin.js"></script>
+
+    <!-- Modal Requerimiento Login -->
+    <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title w-100" id="loginRequiredLabel">
+                        <i class="fas fa-lock"></i> Acceso Restringido
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Para continuar navegando y realizar acciones en la tienda debes iniciar sesión.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btn-ir-login">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const role = sessionStorage.getItem("rol");
+
+            // Botón que lleva al login desde el modal
+            document.getElementById('btn-ir-login')?.addEventListener('click', function () {
+                sessionStorage.clear();
+                window.location.href = "login.html";
+            });
+
+            // Opcional: si quieres interceptar clics en botones/acciones
+            document.querySelectorAll(" button, .cart-icon, .cta-button, .add-to-cart-btn").forEach(el => {
+                el.addEventListener("click", function (e) {
+                    if (!sessionStorage.getItem("rol")) {
+                        e.preventDefault();
+                        $('#loginRequiredModal').modal('show');
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            const role = sessionStorage.getItem("rol");
+
+            if (role !== null) {
+                alert("Acceso denegado. Redirigiendo al login.");
+                window.location.href = "login.html";
+                sessionStorage.clear();
+            }
+        });
+    </script>
 </body>
 
 </html>

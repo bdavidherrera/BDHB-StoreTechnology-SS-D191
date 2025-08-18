@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const tablaProductosS = document.querySelector('#tablaProductos')
     const formEditarProducto = document.querySelector('formEditarProducto')
 
+    mostrarProductosTienda();
+    
     if (tablaProductosS) {
         obtenerProductos()
         configurarFormularioProducto()
@@ -327,6 +329,53 @@ function limpiarFormulario() {
     }
 }
 
+// === Mostrar productos en la tienda ===
+async function mostrarProductosTienda() {
+    const productsGrid = document.getElementById('productsGrid');
+    if (!productsGrid) return;
 
+    productsGrid.innerHTML = '';
+
+    try {
+        const productos = await obtainProductos();
+
+        productos.forEach(producto => {
+            const productCard = createProductCardTienda(producto);
+            productsGrid.appendChild(productCard);
+        });
+    } catch (error) {
+        console.error("Error al cargar los productos en la tienda:", error);
+        productsGrid.innerHTML = `<p class="text-danger">Error al cargar los productos.</p>`;
+    }
+}
+
+// === Crear card de producto ===
+function createProductCardTienda(producto) {
+    const productCard = document.createElement('div');
+    productCard.className = 'product-card';
+
+    productCard.innerHTML = `
+        <div class="product-image">
+            <img src="img/${producto.imagen}" alt="${producto.nombreProducto}" class="product-img">
+        </div>
+        <div class="product-info">
+            <div class="product-name">${producto.nombreProducto}</div>
+            <div class="product-description">${producto.informacion}</div>
+            <div class="product-price">$${Number(producto.valor).toLocaleString('es-CO')}</div>
+            <button class="add-to-cart-btn" onclick="addToCart(${producto.idProducto})">
+                Agregar al Carrito
+            </button>
+        </div>
+    `;
+    const btnAddToCart = productCard.querySelector('.add-to-cart-btn');
+    btnAddToCart.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!sessionStorage.getItem("rol")) {
+
+            $('#loginRequiredModal').modal('show');
+        }})
+
+    return productCard;
+}
 
 
