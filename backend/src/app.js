@@ -7,6 +7,7 @@ import usuariosLoginRoutes from "./routers/usuariosLogin.routes.js"
 import tecnologiaRoutes from "./routers/tecnologia.routes.js"
 import pedidosRoutes from "./routers/pedidos.routes.js"
 import pagosRoutes from "./routers/pagos.routes.js"
+import getHistorialCompra from "./routers/historialCliente.routes.js"
 
 
 
@@ -47,7 +48,9 @@ app.use("/api/pedidos", pedidosRoutes) //Crear, mostrar, actualizar pedidos
 
 app.use("/api/pagos", pagosRoutes) //Crear, mostrar, actualizar pagos
 
+/*Historial Compras Usuario */
 
+app.use("/", getHistorialCompra)
 
 
 
