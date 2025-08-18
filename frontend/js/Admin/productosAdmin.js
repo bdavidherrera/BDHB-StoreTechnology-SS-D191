@@ -1,9 +1,9 @@
-import { obtainProductos, RegistrarProductos, actualizarProductos, eliminarProductos} from '../../Api/consumeApi.js';
+import { obtainProductos, RegistrarProductos, actualizarProductos, eliminarProductos } from '../../Api/consumeApi.js';
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
     const tablaProductosS = document.querySelector('#tablaProductos')
-    
-    if(tablaProductosS){
+
+    if (tablaProductosS) {
         obtenerProductos()
         configurarFormularioProducto()
         configurarSelectorImagen()
@@ -34,8 +34,8 @@ async function obtenerProductos() {
                 <td>${fecha_creacion}</td>
                 <td>${porcentaje_impuesto || 19}%</td>
                 <td>
-                    <button class="btn btn-sm btn-edit btn-action" data-id="${idProducto}">
-                        <i class="fas fa-edit"></i>
+                    <button class="btn btn-sm btn-edit btn-action" data-id="${idProducto} id="actualizarProducto">
+                        <i class="fas fa-edit"> </i>
                     </button>
                     <button class="btn btn-sm btn-delete btn-action" data-id="${idProducto}">
                         <i class="fas fa-trash"></i>
@@ -47,7 +47,8 @@ async function obtenerProductos() {
 
         // Agregar event listeners para los botones de eliminar
         configurarBotonesEliminar();
-        
+        configurarBotonesEditar();
+
     } catch (error) {
         console.error('Error al obtener productos:', error);
         mostrarMensaje('Error al cargar los productos', 'error');
@@ -56,11 +57,23 @@ async function obtenerProductos() {
 
 function configurarFormularioProducto() {
     const formulario = document.getElementById('formAgregarProducto');
-    
+
     if (formulario) {
         formulario.addEventListener('submit', manejarEnvioFormulario);
     }
 }
+
+function configurarBotonesEditar() {
+    const botonesEditar = document.querySelectorAll('.btn-edit');
+
+    botonesEditar.forEach(boton => {
+        boton.addEventListener('click', function() {
+            window.location.href = `../../frontend/ProductoAdmin/editarProducto.html`;
+        });
+    });
+}
+
+
 
 function configurarSelectorImagen() {
     const inputImagen = document.getElementById('imagen');
@@ -70,7 +83,7 @@ function configurarSelectorImagen() {
     const nombreArchivo = document.getElementById('nombreArchivo');
 
     if (inputImagen) {
-        inputImagen.addEventListener('change', function() {
+        inputImagen.addEventListener('change', function () {
             const file = this.files[0];
 
             if (file) {
@@ -78,21 +91,21 @@ function configurarSelectorImagen() {
                 if (label) {
                     label.textContent = file.name;
                 }
-                
+
                 // Mostrar información del archivo
                 if (nombreArchivo) {
                     nombreArchivo.textContent = file.name;
                 }
-                
+
                 // Validar tipo de archivo
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
                 if (validTypes.includes(file.type)) {
                     this.classList.remove('is-invalid');
                     this.classList.add('is-valid');
-                    
+
                     // Crear preview de la imagen
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         if (previewImg) {
                             previewImg.src = e.target.result;
                         }
@@ -101,7 +114,7 @@ function configurarSelectorImagen() {
                         }
                     };
                     reader.readAsDataURL(file);
-                    
+
                 } else {
                     this.classList.add('is-invalid');
                     this.classList.remove('is-valid');
@@ -128,16 +141,16 @@ function configurarSelectorImagen() {
 
 async function manejarEnvioFormulario(e) {
     e.preventDefault();
-    
+
     // Obtener el archivo seleccionado
     const inputImagen = document.getElementById('imagen');
     const archivo = inputImagen.files[0];
-    
+
     if (!archivo) {
         mostrarMensaje('Por favor seleccione una imagen', 'warning');
         return;
     }
-    
+
     // Obtener datos del formulario
     const formData = new FormData(e.target);
     const datosProducto = {
@@ -162,27 +175,27 @@ async function manejarEnvioFormulario(e) {
     try {
         // Si necesitas subir la imagen al servidor, aquí puedes hacerlo
         // const imagenSubida = await subirImagen(archivo);
-        
+
         // Registrar producto con el nombre del archivo
         const resultado = await RegistrarProductos(datosProducto);
-        
+
         if (resultado) {
             // Éxito
             mostrarMensaje('¡Producto agregado exitosamente!', 'success');
-            
+
             // Cerrar modal y limpiar formulario
             const modal = document.getElementById('modalAgregarProducto');
             if (window.$ && window.$.fn.modal) {
                 window.$('#modalAgregarProducto').modal('hide');
             }
             limpiarFormulario();
-            
+
             // Recargar tabla de productos
             await obtenerProductos();
         } else {
             mostrarMensaje('Error al agregar el producto', 'error');
         }
-        
+
     } catch (error) {
         console.error('Error al registrar producto:', error);
         mostrarMensaje('Error al conectar con el servidor', 'error');
@@ -195,22 +208,22 @@ async function manejarEnvioFormulario(e) {
 
 function validarDatosProducto(datos, archivo) {
     const errores = [];
-    
+
     // Validar nombre
     if (!datos.nombreProducto || datos.nombreProducto.length < 2) {
         errores.push('El nombre del producto debe tener al menos 2 caracteres');
     }
-    
+
     // Validar valor
     if (!datos.valor || datos.valor <= 0) {
         errores.push('El precio debe ser mayor a 0');
     }
-    
+
     // Validar cantidad
     if (!datos.cantidad || datos.cantidad < 0) {
         errores.push('La cantidad debe ser mayor o igual a 0');
     }
-    
+
     // Validar imagen
     if (!archivo) {
         errores.push('Debe seleccionar una imagen');
@@ -219,38 +232,38 @@ function validarDatosProducto(datos, archivo) {
         if (!validTypes.includes(archivo.type)) {
             errores.push('El archivo debe ser una imagen válida (JPG, PNG, GIF, WEBP)');
         }
-        
+
         // Validar tamaño del archivo (ejemplo: máximo 5MB)
         const maxSize = 5 * 1024 * 1024; // 5MB en bytes
         if (archivo.size > maxSize) {
             errores.push('El archivo de imagen debe ser menor a 5MB');
         }
     }
-    
+
     // Validar información
     if (!datos.informacion || datos.informacion.length < 10) {
         errores.push('La información del producto debe tener al menos 10 caracteres');
     }
-    
+
     if (errores.length > 0) {
         mostrarMensaje('Por favor corrige los siguientes errores:\n' + errores.join('\n'), 'warning');
         return false;
     }
-    
+
     return true;
 }
 
 function configurarBotonesEliminar() {
     const botonesEliminar = document.querySelectorAll('.btn-delete');
-    
+
     botonesEliminar.forEach(boton => {
-        boton.addEventListener('click', async function() {
+        boton.addEventListener('click', async function () {
             const idProducto = this.getAttribute('data-id');
-            
+
             if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
                 try {
                     const resultado = await eliminarProductos(idProducto);
-                    
+
                     if (resultado) {
                         mostrarMensaje('Producto eliminado exitosamente', 'success');
                         await obtenerProductos(); // Recargar tabla
@@ -266,12 +279,14 @@ function configurarBotonesEliminar() {
     });
 }
 
+
+
 function mostrarMensaje(mensaje, tipo = 'info') {
     // Crear elemento de alerta
     const alerta = document.createElement('div');
     alerta.className = `alert alert-${tipo === 'success' ? 'success' : tipo === 'error' ? 'danger' : 'warning'} alert-dismissible fade show position-fixed`;
     alerta.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    
+
     alerta.innerHTML = `
         <div class="d-flex align-items-center">
             <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
@@ -281,9 +296,9 @@ function mostrarMensaje(mensaje, tipo = 'info') {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(alerta);
-    
+
     // Auto-eliminar después de 5 segundos
     setTimeout(() => {
         if (alerta && alerta.parentNode) {
@@ -300,12 +315,12 @@ function limpiarFormulario() {
         formulario.querySelectorAll('.form-control, .custom-file-input').forEach(input => {
             input.classList.remove('is-valid', 'is-invalid');
         });
-        
+
         // Limpiar preview de imagen
         const preview = document.getElementById('imagenPreview');
         const previewImg = document.getElementById('previewImg');
         const label = document.querySelector('.custom-file-label');
-        
+
         if (preview) preview.style.display = 'none';
         if (previewImg) previewImg.src = '';
         if (label) label.textContent = 'Seleccionar imagen...';

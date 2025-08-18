@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="Description" content="Enter your description here" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="../css/Admin.css" />
+    
+    <title>ActualizarProductos</title>
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2><i class="fas fa-cogs"></i> Admin</h2>
+        <ul>
+            <li>
+                <a href="#productos"><i class="fas fa-box"></i> Productos</a>
+            </li>
+
+            <li>
+                <a href="../admin.html"><i class="bi bi-arrow-left"> Regresar</i> </a>
+            </li>
+            
+            <button id="btnCerrarSesion" class="btn-add">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1>Panel de Administración</h1>
+            <p class="mb-0">Bienvenido al sistema de gestión de productos</p>
+        </header>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script type="module" src="../js/Admin/productosAdmin.js"></script>
+     <script>
+        $(document).ready(function () {
+            // Verificar sesión de administrador
+            const idUsuario = sessionStorage.getItem("idUsuario");
+            const role = sessionStorage.getItem("rol");
+
+            if (!idUsuario || role !== "admin") {
+                alert("Debes iniciar sesión como administrador para acceder a esta página.");
+                window.location.href = "../login.html";
+            }
+
+            // Manejar clic en botón de cerrar sesión
+            $('#btnCerrarSesion').click(function (e) {
+                e.preventDefault();
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    sessionStorage.clear();
+                    window.location.href = "login.html";
+                }
+            });
+        });
+    </script>
+</body>
+
+
+</html>
