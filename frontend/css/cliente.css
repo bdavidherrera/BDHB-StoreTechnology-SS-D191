@@ -802,3 +802,184 @@ main {
     color: #e0e0e0;
 }
 
+/* Estilos adicionales para mejorar el carrito */
+
+.product-stock {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.cart-summary {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #eee;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.3rem 0;
+}
+
+.total-row {
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-top: 1px solid #ddd;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    color: #333;
+}
+
+.cart-item-subtotal,
+.cart-item-tax,
+.cart-item-total {
+    font-size: 0.8rem;
+    margin: 0.2rem 0;
+}
+
+.cart-item-tax {
+    color: #666;
+}
+
+.cart-item-total {
+    font-weight: bold;
+    color: #667eea;
+}
+
+.quantity-display {
+    min-width: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+
+.quantity-btn {
+    background: #f0f0f0;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.quantity-btn:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.1);
+}
+
+.remove-item {
+    background: #ff4757;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.remove-item:hover {
+    background: #ff3742;
+    transform: translateY(-2px);
+}
+
+/* Mensajes de éxito y error */
+.success-message,
+.error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    z-index: 3000;
+    animation: slideInRight 0.3s ease;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.success-message {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.error-message {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Botones de producto mejorados */
+.add-to-cart-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.add-to-cart-btn:disabled:hover {
+    background: #ccc;
+    box-shadow: none;
+}
+
+/* Spinner de carga */
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+    .quantity-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.3rem;
+    }
+    
+    .quantity-btn {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .cart-item-image {
+        align-self: center;
+    }
+    
+    .remove-item {
+        align-self: center;
+        margin-top: 0.5rem;
+    }
+    
+    .success-message,
+    .error-message {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        font-size: 0.9rem;
+    }
+}

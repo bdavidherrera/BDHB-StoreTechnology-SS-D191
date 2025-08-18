@@ -5,6 +5,10 @@ import cors from "cors";
 import usuariosRoutes from "./routers/usuarios.routes.js"
 import usuariosLoginRoutes from "./routers/usuariosLogin.routes.js"
 import tecnologiaRoutes from "./routers/tecnologia.routes.js"
+import pedidosRoutes from "./routers/pedidos.routes.js"
+import pagosRoutes from "./routers/pagos.routes.js"
+
+
 
 /*Asignamos a app toda funcionalidad para mi server web */
 const app = express();
@@ -34,6 +38,16 @@ app.use("/api/usuarios", usuariosRoutes); //Mostrar Usuarios clientes, actualiza
 /*Productos*/
 
 app.use("/api/tecnologia", tecnologiaRoutes) //Mostrar, registrar produstos, actualizar y eliminar productos (desde admin)
+
+/*Pedidos*/
+
+app.use("/api/pedidos", pedidosRoutes) //Crear, mostrar, actualizar pedidos
+
+/*Pagos */
+
+app.use("/api/pagos", pagosRoutes) //Crear, mostrar, actualizar pagos
+
+
 
 
 
