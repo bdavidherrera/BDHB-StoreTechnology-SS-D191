@@ -29,7 +29,7 @@ const postPago = async (req, res) => {
             descuentos: parseFloat(descuentos) || 0,
             impuestos: parseFloat(impuestos),
             monto_total: parseFloat(monto_total),
-            estado_pago: estado_pago || 'pendiente',
+            estado_pago: estado_pago || 'realizado',
             idUsuario: parseInt(idUsuario),
             idPedido: parseInt(idPedido),
             referencia_pago: referencia_pago || null,
