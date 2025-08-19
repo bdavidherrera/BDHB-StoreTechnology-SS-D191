@@ -15,7 +15,7 @@ const DISCOUNT_RULES = {
         threshold: 3,
         percentage: 10
     },
-    
+
     // Descuentos por monto total (automático: se aplica el mayor descuento disponible)
     totalAmount: [
         { threshold: 200000, percentage: 5 },
@@ -26,7 +26,7 @@ const DISCOUNT_RULES = {
 
 // ==================== INICIALIZACIÓN ====================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     loadProducts();
     updateCartUI();
     setupEventListeners();
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadProducts() {
     try {
         const productsData = await obtainProductos();
-        
+
         if (productsData && Array.isArray(productsData)) {
             products = productsData.map(product => ({
                 id: product.idProducto,
@@ -50,7 +50,7 @@ async function loadProducts() {
                 // Descuentos específicos del producto (automáticos)
                 discount: product.descuento || 0 // Porcentaje de descuento del producto
             }));
-            
+
             renderProducts();
         }
     } catch (error) {
@@ -74,29 +74,29 @@ function renderProducts() {
 function createProductCard(product) {
     const productCard = document.createElement('div');
     productCard.className = 'product-card';
-    
+
     // Calcular precio con descuento si tiene
     const discountedPrice = product.price * (1 - product.discount / 100);
     const hasDiscount = product.discount > 0;
-    
+
     productCard.innerHTML = `
         <div class="product-image">
-            ${product.image ? 
-                `<img src="${product.image}" alt="${product.name}" class="product-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            ${product.image ?
+            `<img src="${product.image}" alt="${product.name}" class="product-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                  <div class="product-emoji-fallback" style="display:none;">📱</div>` :
-                `<div class="product-emoji-fallback">📱</div>`
-            }
+            `<div class="product-emoji-fallback">📱</div>`
+        }
             ${hasDiscount ? `<div class="discount-badge">-${product.discount}%</div>` : ''}
         </div>
         <div class="product-info">
             <div class="product-name">${product.name}</div>
             <div class="product-description">${product.description}</div>
             <div class="product-pricing">
-                ${hasDiscount ? 
-                    `<div class="product-price-original">$${formatPrice(product.price)}</div>
+                ${hasDiscount ?
+            `<div class="product-price-original">$${formatPrice(product.price)}</div>
                      <div class="product-price-discounted">$${formatPrice(discountedPrice)}</div>` :
-                    `<div class="product-price">$${formatPrice(product.price)}</div>`
-                }
+            `<div class="product-price">$${formatPrice(product.price)}</div>`
+        }
             </div>
             <div class="product-stock">${product.stock > 0 ? `Stock: ${product.stock}` : 'Sin stock'}</div>
             <button class="add-to-cart-btn" 
@@ -173,7 +173,7 @@ function updateCartCount() {
 
     const totalItems = calculateTotalItems();
     cartCount.textContent = totalItems;
-    
+
     // Animación del contador
     if (totalItems > 0) {
         cartCount.style.display = 'flex';
@@ -211,24 +211,24 @@ function createCartItemHTML(item) {
     return `
         <div class="cart-item">
             <div class="cart-item-image">
-                ${item.image ? 
-                    `<img src="${item.image}" alt="${item.name}" class="cart-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                ${item.image ?
+            `<img src="${item.image}" alt="${item.name}" class="cart-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                      <div class="cart-emoji-fallback" style="display:none;">📱</div>` :
-                    `<div class="cart-emoji-fallback">📱</div>`
-                }
+            `<div class="cart-emoji-fallback">📱</div>`
+        }
             </div>
             <div class="cart-item-info">
                 <div class="cart-item-name">${item.name}</div>
                 <div class="cart-item-pricing">
-                    ${item.discount > 0 ? 
-                        `<div class="cart-original-price">$${formatPrice(item.price)} c/u</div>
+                    ${item.discount > 0 ?
+            `<div class="cart-original-price">$${formatPrice(item.price)} c/u</div>
                          <div class="cart-discounted-price">$${formatPrice(effectivePrice)} c/u</div>` :
-                        `<div class="cart-item-price">$${formatPrice(item.price)} c/u</div>`
-                    }
+            `<div class="cart-item-price">$${formatPrice(item.price)} c/u</div>`
+        }
                 </div>
                 <div class="cart-item-subtotal">Subtotal: $${formatPrice(itemSubtotal)}</div>
-                ${quantityDiscount > 0 ? 
-                    `<div class="cart-quantity-discount">✨ Descuento por cantidad (${DISCOUNT_RULES.quantity.percentage}%): -$${formatPrice(quantityDiscount)}</div>` : ''}
+                ${quantityDiscount > 0 ?
+            `<div class="cart-quantity-discount">✨ Descuento por cantidad (${DISCOUNT_RULES.quantity.percentage}%): -$${formatPrice(quantityDiscount)}</div>` : ''}
                 <div class="cart-item-tax">IVA (${(item.taxRate * 100)}%): $${formatPrice(itemTax)}</div>
                 <div class="cart-item-total">Total: $${formatPrice(itemTotal)}</div>
                 <div class="quantity-controls">
@@ -240,10 +240,10 @@ function createCartItemHTML(item) {
                         <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                ${item.quantity >= DISCOUNT_RULES.quantity.threshold ? 
-                    `<div class="quantity-discount-info">✨ ¡Descuento del ${DISCOUNT_RULES.quantity.percentage}% aplicado por cantidad!</div>` : 
-                    item.quantity === DISCOUNT_RULES.quantity.threshold - 1 ? 
-                    `<div class="quantity-discount-hint">💡 ¡Agrega 1 más y obtén ${DISCOUNT_RULES.quantity.percentage}% de descuento automático!</div>` : ''}
+                ${item.quantity >= DISCOUNT_RULES.quantity.threshold ?
+            `<div class="quantity-discount-info">✨ ¡Descuento del ${DISCOUNT_RULES.quantity.percentage}% aplicado por cantidad!</div>` :
+            item.quantity === DISCOUNT_RULES.quantity.threshold - 1 ?
+                `<div class="quantity-discount-hint">💡 ¡Agrega 1 más y obtén ${DISCOUNT_RULES.quantity.percentage}% de descuento automático!</div>` : ''}
             </div>
             <button class="remove-item" onclick="removeFromCart(${item.id})" title="Eliminar producto">
                 <i class="fas fa-trash-alt"></i>
@@ -254,26 +254,26 @@ function createCartItemHTML(item) {
 
 function updateCartTotals() {
     const totals = calculateCartTotals();
-    
+
     // Actualizar totales en el modal del carrito
     updateElementText('cartSubtotal', formatPrice(totals.subtotal));
     updateElementText('cartDiscounts', formatPrice(totals.discounts));
     updateElementText('cartTax', formatPrice(totals.tax));
     updateElementText('cartTotal', formatPrice(totals.total));
-    
+
     // Actualizar totales en el checkout
     updateElementText('checkoutSubtotal', formatPrice(totals.subtotal));
     updateElementText('checkoutDiscounts', formatPrice(totals.discounts));
     updateElementText('checkoutTax', formatPrice(totals.tax));
     updateElementText('shippingCost', formatPrice(SHIPPING_COST));
     updateElementText('checkoutTotal', formatPrice(totals.total + SHIPPING_COST));
-    
+
     // Mostrar/ocultar líneas de descuento
     toggleDiscountLines(totals.discounts > 0);
-    
+
     // Mostrar información de descuentos automáticos aplicados
     showDiscountInfo(totals);
-    
+
     // Mostrar sugerencias de descuento
     showDiscountSuggestions(totals);
 }
@@ -281,25 +281,25 @@ function updateCartTotals() {
 function calculateCartTotals() {
     let subtotal = 0;
     let totalDiscounts = 0;
-    
+
     // Calcular subtotal y descuentos por ítem
     cart.forEach(item => {
         const itemDiscounts = calculateItemDiscounts(item);
         const effectivePrice = item.price - itemDiscounts.productDiscount;
         const itemSubtotal = effectivePrice * item.quantity;
         const quantityDiscount = itemDiscounts.quantityDiscount * item.quantity;
-        
+
         subtotal += itemSubtotal;
         totalDiscounts += (itemDiscounts.productDiscount * item.quantity) + quantityDiscount;
     });
-    
+
     // Aplicar descuento automático por monto total
     const totalAmountDiscount = calculateTotalAmountDiscount(subtotal);
     totalDiscounts += totalAmountDiscount;
-    
+
     // Calcular subtotal después de descuentos
     const discountedSubtotal = subtotal - totalAmountDiscount;
-    
+
     // Calcular impuestos sobre el subtotal con descuentos
     const tax = cart.reduce((sum, item) => {
         const itemDiscounts = calculateItemDiscounts(item);
@@ -307,13 +307,13 @@ function calculateCartTotals() {
         const itemSubtotal = effectivePrice * item.quantity;
         const quantityDiscount = itemDiscounts.quantityDiscount * item.quantity;
         const finalItemSubtotal = itemSubtotal - quantityDiscount;
-        
+
         return sum + (finalItemSubtotal * item.taxRate);
     }, 0);
-    
+
     // Ajustar impuestos por descuentos adicionales
     const adjustedTax = tax * (discountedSubtotal / subtotal);
-    
+
     const total = discountedSubtotal + adjustedTax;
 
     return {
@@ -330,11 +330,11 @@ function calculateCartTotals() {
 function calculateItemDiscounts(item) {
     // Descuento del producto (automático)
     const productDiscount = item.price * (item.discount / 100);
-    
+
     // Descuento por cantidad (automático)
-    const quantityDiscount = item.quantity >= DISCOUNT_RULES.quantity.threshold ? 
+    const quantityDiscount = item.quantity >= DISCOUNT_RULES.quantity.threshold ?
         (item.price - productDiscount) * (DISCOUNT_RULES.quantity.percentage / 100) : 0;
-    
+
     return {
         productDiscount: productDiscount,
         quantityDiscount: quantityDiscount
@@ -346,34 +346,34 @@ function calculateTotalAmountDiscount(subtotal) {
     const applicableDiscount = DISCOUNT_RULES.totalAmount
         .filter(rule => subtotal >= rule.threshold)
         .sort((a, b) => b.percentage - a.percentage)[0];
-    
+
     return applicableDiscount ? subtotal * (applicableDiscount.percentage / 100) : 0;
 }
 
 function showDiscountInfo(totals) {
     const discountInfo = document.getElementById('discountInfo');
     if (!discountInfo) return;
-    
+
     const discountsApplied = [];
-    
+
     // Mostrar descuentos automáticos aplicados
     if (totals.totalAmountDiscount > 0) {
         const applicableDiscount = DISCOUNT_RULES.totalAmount
             .filter(rule => totals.subtotal >= rule.threshold)
             .sort((a, b) => b.percentage - a.percentage)[0];
-        
+
         discountsApplied.push(`✨ Descuento por compra mayor a $${formatPrice(applicableDiscount.threshold)}: ${applicableDiscount.percentage}%`);
     }
-    
+
     // Contar descuentos por cantidad aplicados
-    const quantityDiscountsCount = cart.filter(item => 
+    const quantityDiscountsCount = cart.filter(item =>
         item.quantity >= DISCOUNT_RULES.quantity.threshold
     ).length;
-    
+
     if (quantityDiscountsCount > 0) {
         discountsApplied.push(`✨ Descuento por cantidad aplicado en ${quantityDiscountsCount} producto${quantityDiscountsCount > 1 ? 's' : ''}: ${DISCOUNT_RULES.quantity.percentage}%`);
     }
-    
+
     if (discountsApplied.length > 0) {
         discountInfo.innerHTML = `
             <div class="applied-discounts">
@@ -391,16 +391,16 @@ function showDiscountInfo(totals) {
 function showDiscountSuggestions(totals) {
     const suggestionsDiv = document.getElementById('discountSuggestions');
     if (!suggestionsDiv) return;
-    
+
     const suggestions = [];
-    
+
     // Sugerir descuento por monto total
     const nextTotalDiscount = DISCOUNT_RULES.totalAmount.find(rule => totals.subtotal < rule.threshold);
     if (nextTotalDiscount) {
         const needed = nextTotalDiscount.threshold - totals.subtotal;
         suggestions.push(`💰 ¡Agrega $${formatPrice(needed)} más y obtén ${nextTotalDiscount.percentage}% de descuento automático!`);
     }
-    
+
     // Sugerir descuentos por cantidad
     cart.forEach(item => {
         if (item.quantity < DISCOUNT_RULES.quantity.threshold) {
@@ -412,7 +412,7 @@ function showDiscountSuggestions(totals) {
             }
         }
     });
-    
+
     if (suggestions.length > 0) {
         suggestionsDiv.innerHTML = `
             <div class="discount-suggestions">
@@ -468,29 +468,59 @@ function showCheckoutForm() {
 
 // ==================== CHECKOUT Y PROCESAMIENTO ====================
 
+// Función corregida para prellenar datos del usuario
 function prefillUserData() {
-    // Prellenar datos del usuario logueado
-    const userName = sessionStorage.getItem('nombre');
-    const userEmail = sessionStorage.getItem('correo');
-    
-    if (userName) {
-        const nameInput = document.getElementById('fullName');
-        if (nameInput) nameInput.value = userName;
+    console.log("=== EJECUTANDO PREFILLUSERDATA ===");
+
+    // Obtener datos del sessionStorage
+    const userData = {
+        nombre: sessionStorage.getItem('nombre'),
+        correo: sessionStorage.getItem('correo'),
+        telefono: sessionStorage.getItem('telefono'),
+        direccion: sessionStorage.getItem('direccion')
+    };
+
+
+    const nameInput = document.getElementById('fullName');
+    if (nameInput) {
+        if (userData.nombre) {
+            nameInput.value = userData.nombre;
+        } 
+    } 
+
+    // Prellenar campo de email
+    const emailInput = document.getElementById('email');
+    if (emailInput) {
+        if (userData.correo) {
+            emailInput.value = userData.correo;
+        }
     }
-    
-    if (userEmail) {
-        const emailInput = document.getElementById('email');
-        if (emailInput) emailInput.value = userEmail;
+    // Prellenar campo de teléfono
+    const phoneInput = document.getElementById('telefono');
+    if (phoneInput) {
+        if (userData.telefono) {
+            phoneInput.value = userData.telefono;
+        }
     }
+
+    // Prellenar campo de dirección
+    const addressInput = document.getElementById('address');
+    if (addressInput) {
+        if (userData.direccion) {
+            addressInput.value = userData.direccion;
+        } 
+    } 
+
 }
+
 
 async function processCheckout(formData) {
     try {
         setSubmitButtonLoading(document.querySelector('#checkoutForm button[type="submit"]'), true);
-        
+
         const totals = calculateCartTotals();
         const userId = sessionStorage.getItem('idUsuario');
-        
+
         // Preparar los items del carrito para el detalle del pedido
         const items = cart.map(item => {
             const itemDiscounts = calculateItemDiscounts(item);
@@ -498,7 +528,7 @@ async function processCheckout(formData) {
             const quantityDiscount = itemDiscounts.quantityDiscount;
             const itemSubtotal = effectivePrice * item.quantity;
             const finalSubtotal = itemSubtotal - (quantityDiscount * item.quantity);
-            
+
             return {
                 idProducto: item.id,
                 cantidad: item.quantity,
@@ -508,7 +538,7 @@ async function processCheckout(formData) {
                 total_linea: finalSubtotal + (finalSubtotal * item.taxRate)
             };
         });
-        
+
         // Crear el pedido
         const orderData = {
             estado: 'pendiente',
@@ -530,11 +560,10 @@ async function processCheckout(formData) {
             descuentosAutomaticos: true // Indicar que se aplicaron descuentos automáticos
         };
 
-        console.log('Enviando pedido:', orderData);
-        
+
         // Llamar a la API para crear el pedido
         const resultado = await crearPedido(orderData);
-        
+
         if (resultado && resultado.success) {
             completeCheckout();
             showSuccessMessage(`¡Pedido #${resultado.idPedido} realizado exitosamente!${resultado.idPago ? ` Pago #${resultado.idPago} registrado.` : ''}${totals.discounts > 0 ? ` Ahorraste $${formatPrice(totals.discounts)} con descuentos automáticos.` : ''} Recibirás un correo de confirmación.`);
@@ -542,7 +571,7 @@ async function processCheckout(formData) {
         } else {
             throw new Error(resultado.message || 'Error al procesar el pedido');
         }
-        
+
     } catch (error) {
         console.error('Error al procesar el checkout:', error);
         showErrorMessage('Error al procesar el pedido. Por favor, intenta nuevamente.');
@@ -559,14 +588,14 @@ function completeCheckout() {
     cart = [];
     updateCartUI();
     toggleCheckout();
-    
+
     // Resetear formulario
     const checkoutForm = document.getElementById('checkoutForm');
     if (checkoutForm) {
         checkoutForm.reset();
         hideCardDetails();
     }
-    
+
     setSubmitButtonLoading(document.querySelector('#checkoutForm button[type="submit"]'), false);
 }
 
@@ -574,7 +603,7 @@ function completeCheckout() {
 
 function validateCheckoutForm(formData) {
     const errors = [];
-    
+
     if (!formData.fullName?.trim()) {
         errors.push('El nombre completo es requerido');
     }
@@ -616,21 +645,21 @@ function validateCreditCardFields(formData, errors) {
 function formatCardNumber(input) {
     let value = input.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
     value = value.substring(0, 16);
-    
+
     const formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
     input.value = formattedValue;
 }
 
 function formatExpiryDate(input) {
     let value = input.value.replace(/\D/g, '');
-    
+
     if (value.length >= 2) {
         let month = value.substring(0, 2);
         let year = value.substring(2, 4);
-        
+
         if (parseInt(month) > 12) month = '12';
         if (parseInt(month) < 1 && month.length === 2) month = '01';
-        
+
         input.value = month + (year ? '/' + year : '');
     } else {
         input.value = value;
@@ -700,9 +729,9 @@ function showSuccessMessage(message) {
     const alertDiv = document.createElement('div');
     alertDiv.className = 'success-message';
     alertDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     setTimeout(() => {
         document.body.removeChild(alertDiv);
     }, 4000);
@@ -713,9 +742,9 @@ function showErrorMessage(message) {
     const alertDiv = document.createElement('div');
     alertDiv.className = 'error-message';
     alertDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     setTimeout(() => {
         if (document.body.contains(alertDiv)) {
             document.body.removeChild(alertDiv);
@@ -734,21 +763,21 @@ function setupEventListeners() {
 }
 
 function setupModalClickEvents() {
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const cartModal = document.getElementById('cartModal');
         const checkoutModal = document.getElementById('checkoutModal');
-        
+
         if (e.target === cartModal) toggleCart();
         if (e.target === checkoutModal) toggleCheckout();
     });
 }
 
 function setupKeyboardEvents() {
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             const cartModal = document.getElementById('cartModal');
             const checkoutModal = document.getElementById('checkoutModal');
-            
+
             if (cartModal?.style.display === 'flex') {
                 toggleCart();
             } else if (checkoutModal?.style.display === 'flex') {
@@ -761,7 +790,7 @@ function setupKeyboardEvents() {
 function setupPaymentMethodToggle() {
     const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
     paymentMethods.forEach(method => {
-        method.addEventListener('change', function() {
+        method.addEventListener('change', function () {
             const cardDetails = document.getElementById('cardDetails');
             if (cardDetails) {
                 if (this.value === 'creditCard') {
@@ -802,12 +831,12 @@ function setupFormSubmission() {
     const checkoutForm = document.getElementById('checkoutForm');
     if (!checkoutForm) return;
 
-    checkoutForm.addEventListener('submit', function(e) {
+    checkoutForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        
+
         const formData = collectFormData();
         const errors = validateCheckoutForm(formData);
-        
+
         if (errors.length > 0) {
             showErrorMessage('Por favor corrige los siguientes errores:\n\n• ' + errors.join('\n• '));
             return;

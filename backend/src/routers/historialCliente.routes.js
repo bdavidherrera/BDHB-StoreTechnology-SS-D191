@@ -3,7 +3,7 @@ import { getHistorialCompras } from "../controllers/historialClientes.controller
 
 const router = Router();
 
-// Ruta protegida solo para clientes
-router.get("/historial", getHistorialCompras);
+// aquí recibe el idUsuario desde la URL
+router.get("/historial/:idUsuario", getHistorialCompras);
 
 export default router;

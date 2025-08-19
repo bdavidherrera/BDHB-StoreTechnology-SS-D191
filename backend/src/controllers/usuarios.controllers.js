@@ -2,12 +2,14 @@ import getConnection from "../db/database.js"
 
 const postUsuarios = async (req, res) => {
     try {
-        const { cedula, nombre, correo, password, rol } = req.body;
+        const { cedula, nombre, correo, direccion, telefono , password, rol } = req.body;
 
         const usuario = {
             cedula, 
             nombre, 
-            correo, 
+            correo,
+            direccion,
+            telefono,
             password, 
             rol
         };
@@ -29,7 +31,7 @@ const getLoginUser= async (req, res)=>{
         const {correo, password} =req.body
         const connection = await getConnection();
         console.log("Conexión obtenida [GET /LoginUser]");
-        const result= await connection.query("SELECT idUsuario, cedula, correo, nombre, password, rol, fecha_creacion, activo FROM usuario WHERE correo = ? AND password = ? AND activo=1 ", [correo, password])
+        const result= await connection.query("SELECT idUsuario, cedula, correo, direccion, telefono, nombre, password, rol, fecha_creacion, activo  FROM usuario WHERE correo = ? AND password = ? AND activo=1 ", [correo, password])
         res.json(result) 
         
     } catch (error) {

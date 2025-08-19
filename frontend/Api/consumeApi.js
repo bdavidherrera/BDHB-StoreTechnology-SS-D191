@@ -25,6 +25,8 @@ const urlPagosUsuario = "http://localhost:8000/api/pagos/usuario/:idUsuario";
 const urlFormasPago = "http://localhost:8000/api/pagos/formas-pago";
 const urlPagoEstado = "http://localhost:8000/api/pagos/:idPago/estado";
 
+
+
 //Usuarios CRUD
 
 export const registrarUsuario = async (datosUsuario) => {
@@ -311,3 +313,33 @@ export const actualizarEstadoPago = async (idPago, estado_pago, notas_pago = nul
         console.error("Error al actualizar el estado del pago:", error);
     }
 }
+
+//Historial compras
+
+export async function getHistorialCompras() {
+    try {
+        const idUsuario = sessionStorage.getItem("idUsuario");
+        const rol = sessionStorage.getItem("rol");
+
+        if (!idUsuario || rol !== "cliente") {
+            return { success: false, message: "No autorizado: debes ser cliente" };
+        }
+
+        const response = await fetch(`http://localhost:8000/historial/${idUsuario}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error al obtener historial de compras:", error);
+        return { success: false, message: "No se pudo obtener el historial" };
+    }
+}
+

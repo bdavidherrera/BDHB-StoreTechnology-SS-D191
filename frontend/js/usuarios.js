@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cedula: document.getElementById("cedula").value,
             nombre: document.getElementById("nombre").value,
             correo: document.getElementById("correo").value,
+            direccion: document.getElementById("direccion").value,
+            telefono: document.getElementById("telefono").value,
             password: document.getElementById("password").value,
             activo: "1", // Asignamos un estado por defecto
             rol: document.getElementById("rol").value
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     }
 
-   if(formularioLogin){          
+  if(formularioLogin){          
     formularioLogin.addEventListener("submit", async (e) => {         
         e.preventDefault();           
         
@@ -48,8 +50,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {             
             const resultado = await loginUsuario(datosLogin);              
-            console.log("Usuario logueado:");
-
+            console.log("Resultado completo del login:", resultado);
+            
             let usuario;
             
             if (Array.isArray(resultado)) {
@@ -63,23 +65,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
             
+            
+            
             const rol = (usuario.rol || "").toLowerCase().trim();
 
+            // GUARDAR TODOS LOS DATOS EN SESSIONSTORAGE
             sessionStorage.setItem("idUsuario", usuario.idUsuario);
             sessionStorage.setItem("rol", usuario.rol);
+            sessionStorage.setItem("correo", usuario.correo);
+            sessionStorage.setItem("nombre", usuario.nombre || "");
+            sessionStorage.setItem("cedula", usuario.cedula || "");
+            sessionStorage.setItem("telefono", usuario.telefono || ""); // ESTE CAMPO SÍ EXISTE
+            sessionStorage.setItem("direccion", usuario.direccion || ""); // ESTE CAMPO SÍ EXISTE
             
-            console.log("Usuario:", usuario);                   
+            
+            
             if (rol === "admin") {  
-
                 alert("Bienvenido Administrador"); 
-
                 window.location.href = "admin.html";  
-
             } else if (rol === "cliente") {                      
                 alert("Bienvenido Cliente");
-
                 window.location.href = "cliente.html";  
-
             } else {                     
                 alert("Rol desconocido: " + rol);                 
             }                  
