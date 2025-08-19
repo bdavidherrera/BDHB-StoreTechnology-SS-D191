@@ -2,24 +2,30 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="Description" content="Enter your description here" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" href="css/Admin.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="css/Admin.css" />
     <title>AdminDasboart</title>
 </head>
 
 <body>
-
     <div class="sidebar">
         <h2><i class="fas fa-cogs"></i> Admin</h2>
         <ul>
-            <li><a href="#productos"><i class="fas fa-box"></i> Productos</a></li>
-            <li><a href="#pedidos"><i class="fas fa-shopping-cart"></i> Pedidos</a></li>
-            <li><a href="#pagos"><i class="fas fa-credit-card"></i> Ventas</a></li>
+            <li>
+                <a href="#productos"><i class="fas fa-box"></i> Productos</a>
+            </li>
+            <li>
+                <a href="#pedidos"><i class="fas fa-shopping-cart"></i> Pedidos</a>
+            </li>
+            <li>
+                <a href="#pagos"><i class="fas fa-credit-card"></i> Ventas</a>
+            </li>
             <button id="btnCerrarSesion" class="btn-add">
                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
             </button>
@@ -56,9 +62,7 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaProductos">
-
-                    </tbody>
+                    <tbody id="tablaProductos"></tbody>
                 </table>
             </div>
         </section>
@@ -83,12 +87,9 @@
                             <th>impuestos_totales</th>
                             <th>total</th>
                             <th>idUsuario</th>
-                            <th>Accion</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaPedidos">
-
-                    </tbody>
+                    <tbody id="tablaPedidos"></tbody>
                 </table>
             </div>
         </section>
@@ -100,7 +101,7 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>idPago </th>
+                            <th>idPago</th>
                             <th>NombrePersona</th>
                             <th>Direccion</th>
                             <th>idFormaPago</th>
@@ -119,14 +120,13 @@
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaPagos">
-
-                    </tbody>
+                    <tbody id="tablaPagos"></tbody>
                 </table>
             </div>
         </section>
     </div>
 
+   
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
@@ -140,14 +140,16 @@
             const role = sessionStorage.getItem("rol");
 
             if (!idUsuario || role !== "admin") {
-                alert("Debes iniciar sesión como administrador para acceder a esta página.");
+                alert(
+                    "Debes iniciar sesión como administrador para acceder a esta página."
+                );
                 window.location.href = "login.html";
             }
 
             // Manejar clic en botón de cerrar sesión
-            $('#btnCerrarSesion').click(function (e) {
+            $("#btnCerrarSesion").click(function (e) {
                 e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                if (confirm("¿Estás seguro de que quieres cerrar sesión?")) {
                     sessionStorage.clear();
                     window.location.href = "login.html";
                 }
@@ -177,7 +179,7 @@
                                         <i class="fas fa-tag"></i> Nombre del Producto *
                                     </label>
                                     <input type="text" class="form-control" id="nombreProducto" name="nombreProducto"
-                                        placeholder="Ingrese el nombre del producto" required>
+                                        placeholder="Ingrese el nombre del producto" required />
                                     <small class="form-text text-muted">Nombre descriptivo del producto</small>
                                 </div>
 
@@ -190,7 +192,7 @@
                                             <span class="input-group-text">$</span>
                                         </div>
                                         <input type="number" class="form-control" id="valor" name="valor"
-                                            placeholder="0.00" min="0" step="0.01" required>
+                                            placeholder="0.00" min="0" step="0.01" required />
                                     </div>
                                     <small class="form-text text-muted">Precio en pesos colombianos</small>
                                 </div>
@@ -200,7 +202,7 @@
                                         <i class="fas fa-boxes"></i> Cantidad en Stock *
                                     </label>
                                     <input type="number" class="form-control" id="cantidad" name="cantidad"
-                                        placeholder="0" min="0" required>
+                                        placeholder="0" min="0" required />
                                     <small class="form-text text-muted">Cantidad disponible en inventario</small>
                                 </div>
                             </div>
@@ -214,19 +216,20 @@
                                     </label>
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="imagen" name="imagen"
-                                            accept="image/*" required>
+                                            accept="image/*" required />
                                         <label class="custom-file-label" for="imagen">Seleccionar imagen...</label>
                                     </div>
                                     <small class="form-text text-muted">Seleccione una imagen (JPG, PNG, GIF,
                                         WEBP)</small>
 
                                     <!-- Preview de la imagen -->
-                                    <div class="mt-3" id="imagenPreview" style="display: none;">
+                                    <div class="mt-3" id="imagenPreview" style="display: none">
                                         <img id="previewImg" src="" alt="Preview" class="img-thumbnail"
-                                            style="max-height: 150px; max-width: 100%;">
+                                            style="max-height: 150px; max-width: 100%" />
                                         <div class="mt-2">
                                             <small class="text-muted">
-                                                <strong>Archivo seleccionado:</strong> <span id="nombreArchivo"></span>
+                                                <strong>Archivo seleccionado:</strong>
+                                                <span id="nombreArchivo"></span>
                                             </small>
                                         </div>
                                     </div>
@@ -234,13 +237,15 @@
 
                                 <div class="form-group">
                                     <label for="informacion">
-                                        <i class="fas fa-info-circle"></i> Información del Producto *
+                                        <i class="fas fa-info-circle"></i> Información del
+                                        Producto *
                                     </label>
                                     <textarea class="form-control" id="informacion" name="informacion" rows="6"
                                         placeholder="Ingrese la información detallada del producto..."
                                         required></textarea>
                                     <small class="form-text text-muted">Descripción completa del producto,
-                                        características, especificaciones, etc.</small>
+                                        características,
+                                        especificaciones, etc.</small>
                                 </div>
                             </div>
                         </div>
@@ -250,8 +255,9 @@
                             <div class="col-12">
                                 <div class="alert alert-info">
                                     <i class="fas fa-info-circle"></i>
-                                    <strong>Información:</strong> Los campos marcados con (*) son obligatorios.
-                                    La fecha de creación y porcentaje de impuesto se asignarán automáticamente.
+                                    <strong>Información:</strong> Los campos marcados con (*)
+                                    son obligatorios. La fecha de creación y porcentaje de
+                                    impuesto se asignarán automáticamente.
                                 </div>
                             </div>
                         </div>
@@ -278,17 +284,17 @@
     <script>
         $(document).ready(function () {
             // Activar el modal al hacer clic en "Agregar Producto"
-            $('#btnAgregarProducto').click(function () {
-                $('#modalAgregarProducto').modal('show');
+            $("#btnAgregarProducto").click(function () {
+                $("#modalAgregarProducto").modal("show");
             });
 
             // Manejar la selección de archivo
-            $('#imagen').on('change', function () {
+            $("#imagen").on("change", function () {
                 const file = this.files[0];
-                const label = $(this).next('.custom-file-label');
-                const preview = $('#imagenPreview');
-                const previewImg = $('#previewImg');
-                const nombreArchivo = $('#nombreArchivo');
+                const label = $(this).next(".custom-file-label");
+                const preview = $("#imagenPreview");
+                const previewImg = $("#previewImg");
+                const nombreArchivo = $("#nombreArchivo");
 
                 if (file) {
                     // Actualizar el label con el nombre del archivo
@@ -298,27 +304,34 @@
                     nombreArchivo.text(file.name);
 
                     // Validar tipo de archivo
-                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                    const validTypes = [
+                        "image/jpeg",
+                        "image/jpg",
+                        "image/png",
+                        "image/gif",
+                        "image/webp",
+                    ];
                     if (validTypes.includes(file.type)) {
-                        $(this).removeClass('is-invalid').addClass('is-valid');
+                        $(this).removeClass("is-invalid").addClass("is-valid");
 
                         // Crear preview de la imagen
                         const reader = new FileReader();
                         reader.onload = function (e) {
-                            previewImg.attr('src', e.target.result);
+                            previewImg.attr("src", e.target.result);
                             preview.show();
                         };
                         reader.readAsDataURL(file);
-
                     } else {
-                        $(this).addClass('is-invalid').removeClass('is-valid');
+                        $(this).addClass("is-invalid").removeClass("is-valid");
                         preview.hide();
-                        alert('Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF, WEBP)');
-                        $(this).val('');
-                        label.text('Seleccionar imagen...');
+                        alert(
+                            "Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF, WEBP)"
+                        );
+                        $(this).val("");
+                        label.text("Seleccionar imagen...");
                     }
                 } else {
-                    label.text('Seleccionar imagen...');
+                    label.text("Seleccionar imagen...");
                     preview.hide();
                 }
             });
@@ -326,26 +339,31 @@
 
         // Limpiar formulario
         function limpiarFormulario() {
-            $('#formAgregarProducto')[0].reset();
+            $("#formAgregarProducto")[0].reset();
             // Remover clases de validación
-            $('.form-control, .custom-file-input').removeClass('is-valid is-invalid');
+            $(".form-control, .custom-file-input").removeClass(
+                "is-valid is-invalid"
+            );
             // Limpiar preview de imagen
-            $('#imagenPreview').hide();
-            $('#previewImg').attr('src', '');
-            $('.custom-file-label').text('Seleccionar imagen...');
+            $("#imagenPreview").hide();
+            $("#previewImg").attr("src", "");
+            $(".custom-file-label").text("Seleccionar imagen...");
         }
 
         // Validación en tiempo real para otros campos
-        $('#nombreProducto, #valor, #cantidad, #informacion').on('input', function () {
-            if ($(this).val().trim() === '') {
-                $(this).addClass('is-invalid').removeClass('is-valid');
-            } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
+        $("#nombreProducto, #valor, #cantidad, #informacion").on(
+            "input",
+            function () {
+                if ($(this).val().trim() === "") {
+                    $(this).addClass("is-invalid").removeClass("is-valid");
+                } else {
+                    $(this).removeClass("is-invalid").addClass("is-valid");
+                }
             }
-        });
+        );
 
         // Formatear precio mientras se escribe
-        $('#valor').on('input', function () {
+        $("#valor").on("input", function () {
             let value = $(this).val();
             if (value < 0) {
                 $(this).val(0);
@@ -353,22 +371,22 @@
         });
 
         // Ejemplo de manejo del envío del formulario
-        $('#formAgregarProducto').on('submit', function (e) {
+        $("#formAgregarProducto").on("submit", function (e) {
             e.preventDefault();
 
             const formData = new FormData(this);
-            const archivo = $('#imagen')[0].files[0];
+            const archivo = $("#imagen")[0].files[0];
 
             if (archivo) {
-                console.log('Archivo seleccionado:', archivo.name);
-                console.log('Tipo de archivo:', archivo.type);
-                console.log('Tamaño del archivo:', archivo.size, 'bytes');
+                console.log("Archivo seleccionado:", archivo.name);
+                console.log("Tipo de archivo:", archivo.type);
+                console.log("Tamaño del archivo:", archivo.size, "bytes");
 
                 // Aquí puedes enviar el FormData con el archivo a tu servidor
                 // O simplemente usar el nombre del archivo como en tu código original
-                alert('Formulario enviado con imagen: ' + archivo.name);
+                alert("Formulario enviado con imagen: " + archivo.name);
             } else {
-                alert('Por favor seleccione una imagen');
+                alert("Por favor seleccione una imagen");
             }
         });
     </script>
@@ -472,8 +490,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
     </style>
-    
-
 </body>
 
 </html>

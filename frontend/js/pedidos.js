@@ -1,4 +1,4 @@
-import { obtainPedidos } from './../Api/consumeApi.js';
+import { obtainPedidos, actualizarEstadoPedido } from './../Api/consumeApi.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const tablaPedidosT = document.querySelector('#tablaPedidos')
@@ -15,13 +15,23 @@ async function obtenerPedidos() {
         const container = document.querySelector('#tablaPedidos');
         container.innerHTML = "";
 
-        PedidosObtained.forEach((pedidos) => {
-            const { idPedido, estado, infopersona, correo_electronico, fecha_pedido, fecha_actualizacion, idUsuario, Direccion, nombresProductos, subtotal, descuentos_totales, impuestos_totales, total } = pedidos;
+        const pedidosArray = Array.isArray(PedidosObtained) 
+            ? PedidosObtained 
+            : PedidosObtained.pedidos || [];
+
+        pedidosArray.forEach((pedido) => {
+            const { idPedido, estado, infopersona, correo_electronico, fecha_pedido, fecha_actualizacion, idUsuario, Direccion, nombresProductos, subtotal, descuentos_totales, impuestos_totales, total } = pedido;
 
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${idPedido}</td>
-                <td>${estado}</td>
+                <td>
+                    <select class="estado-select" data-id="${idPedido}">
+                        <option value="pendiente" ${estado === "pendiente" ? "selected" : ""}>Pendiente</option>
+                        <option value="enviado" ${estado === "enviado" ? "selected" : ""}>Enviado</option>
+                        <option value="entregado" ${estado === "entregado" ? "selected" : ""}>Entregado</option>
+                    </select>
+                </td>
                 <td>${infopersona}</td>
                 <td>${correo_electronico}</td>
                 <td>${Direccion}</td>
@@ -33,21 +43,28 @@ async function obtenerPedidos() {
                 <td>${impuestos_totales}</td>
                 <td>${total}%</td>
                 <td>${idUsuario}</td>
-                <td>
-                    <button class="btn btn-sm btn-edit btn-action" data-id="${idPedido} id="actualizarProducto">
-                        <i class="fas fa-edit"> </i>
-                    </button>
-                </td>
             `;
             container.appendChild(row);
         });
 
+        // Agregar eventos para actualizar estado directamente
+        document.querySelectorAll('.estado-select').forEach(select => {
+            select.addEventListener('change', async (e) => {
+                const idPedido = e.target.dataset.id;
+                const nuevoEstado = e.target.value;
 
-
-
+                try {
+                    await actualizarEstadoPedido(idPedido, nuevoEstado);
+                    obtenerPedidos(); // refrescar tabla
+                } catch (error) {
+                    console.error("Error al actualizar estado:", error);
+                    alert("No se pudo actualizar el estado del pedido");
+                }
+            });
+        });
 
     } catch (error) {
         console.error('Error al obtener pedidos:', error);
-        mostrarMensaje('Error al cargar los pedidos', 'error');
     }
 }
+
