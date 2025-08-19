@@ -97,11 +97,12 @@
         <!-- Sección Pagos -->
         <section id="pagos" class="card seccion-content">
             <h2>Ventas Registradas</h2>
+            <p id="countPagos"></p>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>idPago</th>
+                            <th>id</th>
                             <th>NombrePersona</th>
                             <th>Direccion</th>
                             <th>idFormaPago</th>
@@ -111,13 +112,12 @@
                             <th>descuentos</th>
                             <th>impuestos</th>
                             <th>monto_total</th>
-                            <th>fecha_pago</th>
-                            <th>estado_pago</th>
+                            <th>fecha</th>
+                            <th>estado</th>
                             <th>idUsuario</th>
                             <th>idPedido</th>
-                            <th>referencia_pago</th>
-                            <th>notas_pago</th>
-                            <th>Acciones</th>
+                            <th>referencia</th>
+                            <th>notas</th>
                         </tr>
                     </thead>
                     <tbody id="tablaPagos"></tbody>
@@ -133,6 +133,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <script type="module" src="js/Admin/productosAdmin.js"></script>
     <script type="module" src="js/pedidos.js"></script>
+    <script type="module" src="js/pagos.js"></script>
     <script>
         $(document).ready(function () {
             // Verificar sesión de administrador

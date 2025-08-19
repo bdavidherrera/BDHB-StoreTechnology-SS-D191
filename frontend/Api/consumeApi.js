@@ -25,8 +25,8 @@ const urlPagos = "http://localhost:8000/api/pagos";
 const urlPagosUsuario = "http://localhost:8000/api/pagos/usuario/:idUsuario";
 const urlFormasPago = "http://localhost:8000/api/pagos/formas-pago";
 const urlPagoEstado = "http://localhost:8000/api/pagos/:idPago/estado";
-
-
+const urlPagosTodo = "http://localhost:8000/api/pagos/MostrarP";
+const urlPagosCount = "http://localhost:8000/api/pagos/count";
 
 //Usuarios CRUD
 
@@ -324,6 +324,27 @@ export const actualizarEstadoPago = async (idPago, estado_pago, notas_pago = nul
         console.error("Error al actualizar el estado del pago:", error);
     }
 }
+
+export const obtainPagos = async ()=>{
+    try {
+        const resultadoPagos = await fetch(urlPagosTodo);
+        const pagos = await resultadoPagos.json();
+        return pagos;
+    } catch (error) {
+        console.error("error al obtener los pagos");
+    }
+}
+
+export const obtainPagosCount = async ()=>{
+    try {
+        const resultadoPagos = await fetch(urlPagosCount);
+        const pagos = await resultadoPagos.json();
+        return pagos;
+    } catch (error) {
+        console.error("error al obtener los pagos");
+    }
+}
+
 
 //Historial compras
 

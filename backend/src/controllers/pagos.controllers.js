@@ -144,10 +144,45 @@ const putPagoEstado = async (req, res) => {
     }
 };
 
+const getPagosTodo = async (req, res) => {
+    try {
+        const connection = await getConnection();
+
+       const result= await connection.query("SELECT * FROM pagos  ")
+        res.json(result) ;
+
+    } catch (error) {
+        console.error("Error al obtener pagos:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener pagos"
+        });
+    }
+};
+
+
+const countPagos = async (req, res) => {
+  try {
+    const connection = await getConnection();
+    const result = await connection.query(
+      "SELECT COUNT(*) AS count FROM pagos WHERE descuentos > 0 AND impuestos > 0"
+    );
+    res.json({ count: result[0].count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al obtener count de pagos" });
+  }
+};
+
+
+
+
 export const methodHTPP = {
     postPago,
     getPagos,
     getPagosByUser,
     getFormasPago,
-    putPagoEstado
+    putPagoEstado,
+    getPagosTodo,
+    countPagos
 }

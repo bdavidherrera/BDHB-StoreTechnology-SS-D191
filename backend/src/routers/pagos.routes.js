@@ -19,4 +19,11 @@ router.get("/formas-pago", pagosController.getFormasPago);
 // Actualizar estado de un pago
 router.put("/:idPago/estado", pagosController.putPagoEstado);
 
+//Mostrar todo del pago
+router.get("/MostrarP",pagosController.getPagosTodo)
+
+//Contador de pagos
+
+router.get("/count", pagosController.countPagos)
+
 export default router;
