@@ -17,6 +17,7 @@ const urlPedidos = "http://localhost:8000/api/pedidos";
 const urlPedidosUsuario = "http://localhost:8000/api/pedidos/usuario/:idUsuario";
 const urlPedidoDetalle = "http://localhost:8000/api/pedidos/:idPedido/detalle";
 const urlPedidoEstado = "http://localhost:8000/api/pedidos/:idPedido/estado";
+const urlPedidosTodo = "http://localhost:8000/api/pedidos/mostrarPedidos";
 
 
 //Pagos API
@@ -240,6 +241,16 @@ export const actualizarEstadoPedido = async (idPedido, estado) => {
         
     } catch (error) {
         console.error("Error al actualizar el estado del pedido:", error);
+    }
+}
+
+export const obtainPedidos = async ()=>{
+    try {
+        const resultadopedidos = await fetch(urlPedidosTodo);
+        const pedidos = await resultadopedidos.json();
+        return pedidos;
+    } catch (error) {
+        console.error("error al obtener los pedidos");
     }
 }
 

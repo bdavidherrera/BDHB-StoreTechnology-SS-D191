@@ -37,7 +37,7 @@ async function obtenerProductos() {
                 <td>$${Number(valor).toLocaleString('es-CO')}</td>
                 <td>${cantidad}</td>
                 <td>${informacion}</td>
-                <td>${fecha_creacion}</td>
+                <td>${new Date(fecha_creacion).toLocaleString()}</td>
                 <td>${porcentaje_impuesto || 19}%</td>
                 <td>
                     <button class="btn btn-sm btn-edit btn-action" data-id="${idProducto} id="actualizarProducto">
