@@ -872,6 +872,612 @@ function setSubmitButtonLoading(button, isLoading) {
     }
 }
 
+
+
+// ==================== SISTEMA DE FILTROS PARA PRODUCTOS ====================
+
+// Variables globales para filtros
+let activeFilters = {
+    priceRange: { min: 0, max: Infinity },
+    category: 'all',
+    inStock: false,
+    searchQuery: '',
+    sortBy: 'name' // name, price-asc, price-desc, stock
+};
+
+// Rangos de precios predefinidos (en pesos colombianos)
+const PRICE_RANGES = [
+    { label: 'Todos los precios', min: 0, max: Infinity },
+    { label: 'Menos de $50.000', min: 0, max: 50000 },
+    { label: '$50.000 - $100.000', min: 50000, max: 100000 },
+    { label: '$100.000 - $200.000', min: 100000, max: 200000 },
+    { label: '$200.000 - $500.000', min: 200000, max: 500000 },
+    { label: '$500.000 - $1.000.000', min: 500000, max: 1000000 },
+    { label: 'Más de $1.000.000', min: 1000000, max: Infinity }
+];
+
+// ==================== INICIALIZACIÓN DE FILTROS ====================
+
+function initializeFilters() {
+    createFilterUI();
+    setupFilterEventListeners();
+    updateProductsWithFilters();
+}
+
+// ==================== CREACIÓN DE LA INTERFAZ DE FILTROS ====================
+
+function createFilterUI() {
+    const productsSection = document.getElementById('products');
+    if (!productsSection) return;
+
+    // Crear contenedor de filtros
+    const filtersContainer = document.createElement('div');
+    filtersContainer.className = 'filters-container';
+    filtersContainer.id = 'filtersContainer';
+    
+    filtersContainer.innerHTML = `
+        <div class="filters-header">
+            <h3><i class="fas fa-filter"></i> Filtros</h3>
+            <button class="filters-toggle" id="filtersToggle">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        
+        <div class="filters-content" id="filtersContent">
+            <!-- Barra de búsqueda -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-search"></i> Buscar productos
+                </label>
+                <div class="search-wrapper">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Buscar por nombre..."
+                        class="search-input"
+                    >
+                    <button class="search-clear" id="searchClear" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtro por rango de precio -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-tags"></i> Rango de precio
+                </label>
+                <div class="price-filter-options">
+                    ${PRICE_RANGES.map((range, index) => `
+                        <label class="price-option">
+                            <input 
+                                type="radio" 
+                                name="priceRange" 
+                                value="${index}"
+                                ${index === 0 ? 'checked' : ''}
+                            >
+                            <span class="price-option-label">${range.label}</span>
+                        </label>
+                    `).join('')}
+                </div>
+                
+                <!-- Rango personalizado -->
+                <div class="custom-price-range">
+                    <label class="price-option">
+                        <input 
+                            type="radio" 
+                            name="priceRange" 
+                            value="custom"
+                        >
+                        <span class="price-option-label">Rango personalizado:</span>
+                    </label>
+                    <div class="custom-inputs">
+                        <div class="price-input-group">
+                            <span class="currency">$</span>
+                            <input 
+                                type="number" 
+                                id="minPrice" 
+                                placeholder="Precio mín"
+                                min="0"
+                                step="1000"
+                                class="price-input"
+                            >
+                        </div>
+                        <span class="price-separator">-</span>
+                        <div class="price-input-group">
+                            <span class="currency">$</span>
+                            <input 
+                                type="number" 
+                                id="maxPrice" 
+                                placeholder="Precio máx"
+                                min="0"
+                                step="1000"
+                                class="price-input"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtro por disponibilidad -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-box"></i> Disponibilidad
+                </label>
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="inStockOnly">
+                    <span class="checkmark"></span>
+                    Solo productos en stock
+                </label>
+            </div>
+
+            <!-- Ordenamiento -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-sort"></i> Ordenar por
+                </label>
+                <select id="sortBy" class="sort-select">
+                    <option value="name">Nombre (A-Z)</option>
+                    <option value="name-desc">Nombre (Z-A)</option>
+                    <option value="price-asc">Precio (menor a mayor)</option>
+                    <option value="price-desc">Precio (mayor a menor)</option>
+                    <option value="stock">Stock disponible</option>
+                </select>
+            </div>
+
+            <!-- Acciones de filtro -->
+            <div class="filter-actions">
+                <button class="btn-apply-filters" id="applyFilters">
+                    <i class="fas fa-check"></i> Aplicar filtros
+                </button>
+                <button class="btn-clear-filters" id="clearFilters">
+                    <i class="fas fa-eraser"></i> Limpiar filtros
+                </button>
+                
+            </div>
+
+            <!-- Contador de resultados -->
+            <div class="filter-results" id="filterResults">
+                <span id="resultsCount">0</span> productos encontrados
+            </div>
+        </div>
+    `;
+
+    // Insertar antes de la grilla de productos
+    const sectionTitle = productsSection.querySelector('.section-title');
+    if (sectionTitle) {
+        sectionTitle.insertAdjacentElement('afterend', filtersContainer);
+    } else {
+        productsSection.insertBefore(filtersContainer, productsSection.firstChild);
+    }
+}
+
+// ==================== EVENT LISTENERS PARA FILTROS ====================
+
+function setupFilterEventListeners() {
+    // Toggle de filtros
+    const filtersToggle = document.getElementById('filtersToggle');
+    if (filtersToggle) {
+        filtersToggle.addEventListener('click', toggleFilters);
+    }
+
+    // Búsqueda en tiempo real
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearchInput);
+    }
+
+    // Limpiar búsqueda
+    const searchClear = document.getElementById('searchClear');
+    if (searchClear) {
+        searchClear.addEventListener('click', clearSearch);
+    }
+
+    // Rangos de precio predefinidos
+    const priceRadios = document.querySelectorAll('input[name="priceRange"]');
+    priceRadios.forEach(radio => {
+        radio.addEventListener('change', handlePriceRangeChange);
+    });
+
+    // Rango personalizado
+    const minPrice = document.getElementById('minPrice');
+    const maxPrice = document.getElementById('maxPrice');
+    if (minPrice && maxPrice) {
+        minPrice.addEventListener('input', handleCustomPriceRange);
+        maxPrice.addEventListener('input', handleCustomPriceRange);
+    }
+
+    // Filtro de stock
+    const inStockOnly = document.getElementById('inStockOnly');
+    if (inStockOnly) {
+        inStockOnly.addEventListener('change', handleStockFilter);
+    }
+
+    // Ordenamiento
+    const sortBy = document.getElementById('sortBy');
+    if (sortBy) {
+        sortBy.addEventListener('change', handleSortChange);
+    }
+
+    // Botones de acción
+    const applyFilters = document.getElementById('applyFilters');
+    const clearFilters = document.getElementById('clearFilters');
+    
+    if (applyFilters) {
+        applyFilters.addEventListener('click', updateProductsWithFilters);
+    }
+    
+    if (clearFilters) {
+        clearFilters.addEventListener('click', resetAllFilters);
+    }
+}
+
+// ==================== MANEJADORES DE EVENTOS ====================
+
+function toggleFilters() {
+    const filtersContent = document.getElementById('filtersContent');
+    const filtersToggle = document.getElementById('filtersToggle');
+    
+    if (!filtersContent || !filtersToggle) return;
+
+    const isCollapsed = filtersContent.style.display === 'none';
+    
+    filtersContent.style.display = isCollapsed ? 'block' : 'none';
+    filtersToggle.innerHTML = isCollapsed 
+        ? '<i class="fas fa-chevron-up"></i>' 
+        : '<i class="fas fa-chevron-down"></i>';
+}
+
+function handleSearchInput() {
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    
+    if (!searchInput) return;
+
+    activeFilters.searchQuery = searchInput.value.trim().toLowerCase();
+    
+    // Mostrar/ocultar botón de limpiar
+    if (searchClear) {
+        searchClear.style.display = activeFilters.searchQuery ? 'block' : 'none';
+    }
+    
+    // Aplicar filtros en tiempo real para búsqueda
+    updateProductsWithFilters();
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    
+    if (searchInput) {
+        searchInput.value = '';
+        activeFilters.searchQuery = '';
+    }
+    
+    if (searchClear) {
+        searchClear.style.display = 'none';
+    }
+    
+    updateProductsWithFilters();
+}
+
+function handlePriceRangeChange(e) {
+    const value = e.target.value;
+    
+    if (value === 'custom') {
+        // Habilitar inputs personalizados
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        
+        if (minPrice && maxPrice) {
+            minPrice.disabled = false;
+            maxPrice.disabled = false;
+            handleCustomPriceRange();
+        }
+    } else {
+        // Usar rango predefinido
+        const rangeIndex = parseInt(value);
+        const range = PRICE_RANGES[rangeIndex];
+        
+        activeFilters.priceRange = {
+            min: range.min,
+            max: range.max
+        };
+        
+        // Deshabilitar inputs personalizados
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        
+        if (minPrice && maxPrice) {
+            minPrice.disabled = true;
+            maxPrice.disabled = true;
+            minPrice.value = '';
+            maxPrice.value = '';
+        }
+    }
+    
+    updateProductsWithFilters();
+}
+
+function handleCustomPriceRange() {
+    const minPrice = document.getElementById('minPrice');
+    const maxPrice = document.getElementById('maxPrice');
+    
+    if (!minPrice || !maxPrice) return;
+
+    const min = parseInt(minPrice.value) || 0;
+    const max = parseInt(maxPrice.value) || Infinity;
+    
+    activeFilters.priceRange = {
+        min: Math.max(0, min),
+        max: max > min ? max : Infinity
+    };
+    
+    updateProductsWithFilters();
+}
+
+function handleStockFilter() {
+    const inStockOnly = document.getElementById('inStockOnly');
+    if (!inStockOnly) return;
+
+    activeFilters.inStock = inStockOnly.checked;
+    updateProductsWithFilters();
+}
+
+function handleSortChange() {
+    const sortBy = document.getElementById('sortBy');
+    if (!sortBy) return;
+
+    activeFilters.sortBy = sortBy.value;
+    updateProductsWithFilters();
+}
+
+// ==================== APLICACIÓN DE FILTROS ====================
+
+function updateProductsWithFilters() {
+    if (!products || !Array.isArray(products)) return;
+
+    // Aplicar filtros
+    let filteredProducts = products.filter(product => {
+        return applyAllFilters(product);
+    });
+
+    // Aplicar ordenamiento
+    filteredProducts = sortProducts(filteredProducts);
+
+    // Renderizar productos filtrados
+    renderFilteredProducts(filteredProducts);
+    
+    // Actualizar contador de resultados
+    updateResultsCount(filteredProducts.length);
+
+    // Mostrar mensaje si no hay resultados
+    if (filteredProducts.length === 0) {
+        showNoResultsMessage();
+    }
+}
+
+function applyAllFilters(product) {
+    // Obtener precio efectivo (con descuentos)
+    const effectivePrice = product.price * (1 - (product.discount || 0) / 100);
+    
+    // Filtro por precio
+    if (effectivePrice < activeFilters.priceRange.min || 
+        effectivePrice > activeFilters.priceRange.max) {
+        return false;
+    }
+
+    // Filtro por stock
+    if (activeFilters.inStock && product.stock <= 0) {
+        return false;
+    }
+
+    // Filtro por búsqueda
+    if (activeFilters.searchQuery) {
+        const searchTerm = activeFilters.searchQuery;
+        const productName = product.name.toLowerCase();
+        const productDescription = (product.description || '').toLowerCase();
+        
+        if (!productName.includes(searchTerm) && !productDescription.includes(searchTerm)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function sortProducts(products) {
+    const sortBy = activeFilters.sortBy;
+    
+    return [...products].sort((a, b) => {
+        switch (sortBy) {
+            case 'name':
+                return a.name.localeCompare(b.name);
+            
+            case 'name-desc':
+                return b.name.localeCompare(a.name);
+            
+            case 'price-asc':
+                const priceA = a.price * (1 - (a.discount || 0) / 100);
+                const priceB = b.price * (1 - (b.discount || 0) / 100);
+                return priceA - priceB;
+            
+            case 'price-desc':
+                const priceDescA = a.price * (1 - (a.discount || 0) / 100);
+                const priceDescB = b.price * (1 - (b.discount || 0) / 100);
+                return priceDescB - priceDescA;
+            
+            case 'stock':
+                return b.stock - a.stock;
+            
+            default:
+                return 0;
+        }
+    });
+}
+
+function renderFilteredProducts(filteredProducts) {
+    const productsGrid = document.getElementById('productsGrid');
+    if (!productsGrid) return;
+
+    if (filteredProducts.length === 0) {
+        productsGrid.innerHTML = '';
+        return;
+    }
+
+    productsGrid.innerHTML = '';
+    filteredProducts.forEach(product => {
+        const productCard = createProductCard(product);
+        productsGrid.appendChild(productCard);
+    });
+}
+
+function showNoResultsMessage() {
+    const productsGrid = document.getElementById('productsGrid');
+    if (!productsGrid) return;
+
+    productsGrid.innerHTML = `
+        <div class="no-results-message">
+            <div class="no-results-icon">
+                <i class="fas fa-search" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+            </div>
+            <h3>No se encontraron productos</h3>
+            <p>No hay productos que coincidan con los filtros seleccionados.</p>
+            <button class="btn-clear-filters" onclick="resetAllFilters()">
+                <i class="fas fa-eraser"></i> Limpiar filtros
+            </button>
+        </div>
+    `;
+}
+
+function updateResultsCount(count) {
+    const resultsCount = document.getElementById('resultsCount');
+    if (resultsCount) {
+        resultsCount.textContent = count;
+    }
+}
+
+// ==================== RESET DE FILTROS ====================
+
+function resetAllFilters() {
+    // Resetear filtros activos
+    activeFilters = {
+        priceRange: { min: 0, max: Infinity },
+        category: 'all',
+        inStock: false,
+        searchQuery: '',
+        sortBy: 'name'
+    };
+
+    // Resetear interfaz
+    resetFilterUI();
+    
+    // Aplicar filtros (mostrar todos los productos)
+    updateProductsWithFilters();
+    
+    showSuccessMessage('Filtros restablecidos');
+}
+
+function resetFilterUI() {
+    // Limpiar búsqueda
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    if (searchClear) {
+        searchClear.style.display = 'none';
+    }
+
+    // Resetear rangos de precio
+    const priceRadios = document.querySelectorAll('input[name="priceRange"]');
+    priceRadios.forEach((radio, index) => {
+        radio.checked = index === 0;
+    });
+
+    // Limpiar inputs personalizados
+    const minPrice = document.getElementById('minPrice');
+    const maxPrice = document.getElementById('maxPrice');
+    
+    if (minPrice && maxPrice) {
+        minPrice.value = '';
+        maxPrice.value = '';
+        minPrice.disabled = true;
+        maxPrice.disabled = true;
+    }
+
+    // Resetear filtro de stock
+    const inStockOnly = document.getElementById('inStockOnly');
+    if (inStockOnly) {
+        inStockOnly.checked = false;
+    }
+
+    // Resetear ordenamiento
+    const sortBy = document.getElementById('sortBy');
+    if (sortBy) {
+        sortBy.value = 'name';
+    }
+}
+
+// ==================== FUNCIONES PÚBLICAS ====================
+
+// Función para obtener productos filtrados (útil para otras partes del código)
+function getFilteredProducts() {
+    if (!products || !Array.isArray(products)) return [];
+    
+    return products.filter(product => applyAllFilters(product));
+}
+
+// Función para aplicar un filtro específico desde código
+function setFilter(filterType, value) {
+    switch (filterType) {
+        case 'price':
+            activeFilters.priceRange = value;
+            break;
+        case 'search':
+            activeFilters.searchQuery = value.toLowerCase();
+            break;
+        case 'stock':
+            activeFilters.inStock = value;
+            break;
+        case 'sort':
+            activeFilters.sortBy = value;
+            break;
+    }
+    
+    updateProductsWithFilters();
+}
+
+// Función para obtener el estado actual de los filtros
+function getActiveFilters() {
+    return { ...activeFilters };
+}
+
+// ==================== INTEGRACIÓN CON EL SISTEMA EXISTENTE ====================
+
+// Modificar la función loadProducts original para incluir filtros
+const originalLoadProducts = loadProducts;
+loadProducts = async function() {
+    await originalLoadProducts();
+    
+    // Inicializar filtros después de cargar productos
+    if (products && products.length > 0) {
+        // Verificar si ya existe el contenedor de filtros
+        if (!document.getElementById('filtersContainer')) {
+            initializeFilters();
+        } else {
+            updateProductsWithFilters();
+        }
+    }
+};
+
+// Hacer disponibles las funciones globalmente
+window.resetAllFilters = resetAllFilters;
+window.setFilter = setFilter;
+window.getFilteredProducts = getFilteredProducts;
+window.getActiveFilters = getActiveFilters;
+
 // ==================== FUNCIONES GLOBALES ====================
 // Estas funciones deben estar disponibles globalmente para los onclick en HTML
 
