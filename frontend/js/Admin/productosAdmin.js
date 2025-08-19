@@ -2,17 +2,20 @@ import { obtainProductos, RegistrarProductos, actualizarProductos, eliminarProdu
 
 document.addEventListener("DOMContentLoaded", () => {
     const tablaProductosS = document.querySelector('#tablaProductos')
-    const formEditarProducto = document.querySelector('formEditarProducto')
+    const formEditarProducto = document.querySelector('#formActualizarProducto')
 
     mostrarProductosTienda();
-    
+
     if (tablaProductosS) {
         obtenerProductos()
         configurarFormularioProducto()
         configurarSelectorImagen()
     }
-    if(formEditarProducto){
+    if (formEditarProducto) {
+        configurarFormularioActualizar();
+        obtenerProductos()
         
+
     }
 })
 
@@ -40,9 +43,9 @@ async function obtenerProductos() {
                 <td>${new Date(fecha_creacion).toLocaleString()}</td>
                 <td>${porcentaje_impuesto || 19}%</td>
                 <td>
-                    <button class="btn btn-sm btn-edit btn-action" data-id="${idProducto} id="actualizarProducto">
-                        <i class="fas fa-edit"> </i>
-                    </button>
+                    <button class="btn btn-sm btn-edit btn-action" data-id="${idProducto}">
+    <i class="fas fa-edit"></i>
+</button>
                     <button class="btn btn-sm btn-delete btn-action" data-id="${idProducto}">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -69,15 +72,115 @@ function configurarFormularioProducto() {
     }
 }
 
+// Configurar botones de editar
 function configurarBotonesEditar() {
     const botonesEditar = document.querySelectorAll('.btn-edit');
 
     botonesEditar.forEach(boton => {
-        boton.addEventListener('click', function() {
-            window.location.href = `../../frontend/ProductoAdmin/editarProducto.html`;
+        boton.addEventListener('click', function () {
+            const idProducto = parseInt(this.getAttribute('data-id'), 10); // 👈 fuerza a número
+
+            // Buscar la fila correspondiente
+            const fila = this.closest('tr');
+            const producto = {
+                idProducto,
+                nombreProducto: fila.children[1].textContent.trim(),
+                imagen: fila.querySelector('img').getAttribute('src').replace("img/", ""),
+                valor: parseFloat(fila.children[3].textContent.replace(/[^\d]/g, "")), // 👈 fuerza número
+                cantidad: parseInt(fila.children[4].textContent.trim(), 10),
+                informacion: fila.children[5].textContent.trim()
+            };
+
+            abrirModalActualizarProducto(producto);
         });
     });
 }
+
+/**
+ * Función que abre el modal de actualización y llena los datos
+ */
+window.abrirModalActualizarProducto = function (producto) {
+    // Asignar valores a los inputs
+    document.getElementById('idProductoActualizar').value = producto.idProducto;
+    document.getElementById('nombreProductoActualizar').value = producto.nombreProducto;
+    document.getElementById('valorActualizar').value = producto.valor;
+    document.getElementById('cantidadActualizar').value = producto.cantidad;
+    document.getElementById('informacionActualizar').value = producto.informacion;
+
+    // Imagen actual
+    document.getElementById('imagenActual').src = `img/${producto.imagen}`;
+    document.getElementById('nombreImagenActual').textContent = producto.imagen;
+
+    // Resetear selección de nueva imagen
+    limpiarFormularioActualizar();
+
+    // Abrir modal con Bootstrap
+    $('#modalActualizarProducto').modal('show');
+};
+
+/**
+ * Manejar envío del formulario de actualización
+ */
+function configurarFormularioActualizar() {
+    const formActualizarProducto = document.getElementById("formActualizarProducto");
+
+    if (formActualizarProducto) {
+        formActualizarProducto.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const inputImagen = document.getElementById("imagenActualizar");
+            const imagenActual = document.getElementById("nombreImagenActual").textContent;
+
+            // Si hay nueva imagen, se usa; sino se mantiene la actual
+            const fileName = (inputImagen && inputImagen.files.length > 0)
+                ? inputImagen.files[0].name
+                : imagenActual;
+
+            const datosProducto = {
+                idProducto: parseInt(document.getElementById("idProductoActualizar").value, 10),
+                nombreProducto: document.getElementById("nombreProductoActualizar").value.trim(),
+                valor: parseFloat(document.getElementById("valorActualizar").value),
+                cantidad: parseInt(document.getElementById("cantidadActualizar").value, 10),
+                informacion: document.getElementById("informacionActualizar").value.trim(),
+                imagen: fileName
+            };
+
+
+            try {
+                await actualizarProductos(datosProducto); // <- Llama tu API
+                alert("✅ Producto actualizado correctamente");
+                mostrarProductosTienda(); // Refresca tabla
+                $('#modalActualizarProducto').modal('hide'); // Cerrar modal
+            } catch (error) {
+                console.error("❌ Error al actualizar producto:", error);
+                alert("No se pudo actualizar el producto");
+            }
+        });
+    }
+}
+
+/**
+ * Resetear inputs de imagen en el modal de actualizar
+ */
+function limpiarFormularioActualizar() {
+    const inputImagen = document.getElementById('imagenActualizar');
+    if (inputImagen) {
+        inputImagen.value = '';
+        inputImagen.classList.remove('is-valid', 'is-invalid');
+    }
+
+    const label = document.querySelector('#imagenActualizar + .custom-file-label');
+    if (label) {
+        label.textContent = 'Seleccionar nueva imagen...';
+    }
+
+    const preview = document.getElementById('imagenPreviewActualizar');
+    if (preview) {
+        preview.style.display = 'none';
+    }
+}
+
+
 
 function configurarSelectorImagen() {
     const inputImagen = document.getElementById('imagen');
@@ -373,9 +476,9 @@ function createProductCardTienda(producto) {
         if (!sessionStorage.getItem("rol")) {
 
             $('#loginRequiredModal').modal('show');
-        }})
+        }
+    })
 
     return productCard;
 }
-
 

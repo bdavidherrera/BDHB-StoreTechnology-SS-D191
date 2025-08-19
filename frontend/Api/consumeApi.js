@@ -148,12 +148,25 @@ export const actualizarProductos = async (datosProductos) => {
             },
             body: JSON.stringify(datosProductos)
         });
+
         const resultado = await response.json();
-        return resultado;                                   
+
+        if (response.ok) {
+            // Refrescar la página después de 1 segundo
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            console.error("❌ Error en la actualización:", resultado);
+        }
+
+        return resultado;
+
     } catch (error) {
         console.error("Error al actualizar los productos:", error);
     }
 }
+
 
 export const eliminarProductos = async (idproductos) => {
     try {

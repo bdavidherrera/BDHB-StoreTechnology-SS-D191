@@ -176,7 +176,6 @@ const countPagos = async (req, res) => {
 
 
 
-
 export const methodHTPP = {
     postPago,
     getPagos,

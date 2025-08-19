@@ -34,24 +34,27 @@ const postTecnologiaProducto = async (req, res) => {
         res.status(500).json({ message: "Error al crear el producto" });
     }
 };
-
 const putTecnologiaProducto = async (req, res)=> {
     try {
         const { idProducto, nombreProducto, imagen, valor, cantidad, informacion, porcentaje_impuesto } = req.body;
 
-        const productos = {
-            idProducto ,nombreProducto, imagen, valor, cantidad, informacion, porcentaje_impuesto
-        };
+        console.log("Body recibido:", req.body); // 👈 revisa qué llega
+
+        const productos = { nombreProducto, imagen, valor, cantidad, informacion, porcentaje_impuesto };
 
         const connection = await getConnection();
         console.log("Conexión obtenida [PUT /Productos/:id]");
-        const result = await connection.query("UPDATE producto SET ? WHERE idProducto = ? AND activo = '1'", [productos, idProducto]);
+        const result = await connection.query(
+            "UPDATE producto SET ? WHERE idProducto = ? AND activo = '1'",
+            [productos, idProducto]
+        );
         res.json(result);
     } catch (error) {
         console.error("ERROR 500:", error);
-        res.status(500).json({ message: "error al actualizar el productos", error: error.message });
+        res.status(500).json({ message: "error al actualizar el producto", error: error.message });
     }
 };
+
 
 const deleteTecnologiaProducto = async (req, res) => {
     try {
