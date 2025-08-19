@@ -244,10 +244,30 @@ const putPedidoEstado = async (req, res) => {
     }
 };
 
+
+const getPedidosTodo = async (req, res) => {
+    try {
+        const connection = await getConnection();
+
+       const result= await connection.query("SELECT * FROM pedidos  ")
+        res.json(result) ;
+
+    } catch (error) {
+        console.error("Error al obtener pedidos:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error al obtener pedidos"
+        });
+    }
+};
+
+
+
 export const methodHTPP = {
     postPedido,
     getPedidos,
     getPedidosByUser,
     getPedidoDetalle,
-    putPedidoEstado
+    putPedidoEstado,
+    getPedidosTodo
 }

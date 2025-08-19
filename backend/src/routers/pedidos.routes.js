@@ -19,4 +19,7 @@ router.get("/:idPedido/detalle", pedidosController.getPedidoDetalle);
 // Actualizar estado de un pedido
 router.put("/:idPedido/estado", pedidosController.putPedidoEstado);
 
+//Mostrar todo de pedidos
+router.get("/mostrarPedidos", pedidosController.getPedidosTodo)
+
 export default router;
