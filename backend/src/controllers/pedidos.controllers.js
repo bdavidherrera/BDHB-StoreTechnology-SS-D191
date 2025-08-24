@@ -1,5 +1,85 @@
 import getConnection from "../db/database.js"
+import { methodHTPP as ventasController } from "./ventas.controllers.js";
 
+// FUNCIÓN CORREGIDA: Actualizar estado del pedido
+const putPedidoEstado = async (req, res) => {
+    const connection = await getConnection();
+    
+    try {
+        await connection.query("START TRANSACTION");
+        
+        const { idPedido } = req.params;
+        const { estado } = req.body;
+
+        console.log(`Conexión obtenida [PUT /pedido/${idPedido}/estado] - Nuevo estado: ${estado}`);
+        
+        // Verificar que el pedido existe
+        const pedidoExiste = await connection.query(
+            "SELECT idPedido, estado FROM pedidos WHERE idPedido = ?", 
+            [idPedido]
+        );
+
+        if (pedidoExiste.length === 0) {
+            await connection.query("ROLLBACK");
+            return res.status(404).json({
+                success: false,
+                message: "Pedido no encontrado"
+            });
+        }
+
+        const estadoAnterior = pedidoExiste[0].estado;
+        console.log(`Estado anterior: ${estadoAnterior} -> Nuevo estado: ${estado}`);
+        
+        // Actualizar el estado del pedido
+        const result = await connection.query(
+            "UPDATE pedidos SET estado = ?, fecha_actualizacion = NOW() WHERE idPedido = ?", 
+            [estado, idPedido]
+        );
+
+        // CORREGIDO: Registrar venta automáticamente cuando el estado cambie a estados que indican confirmación
+        const estadosQueGeneranVenta = ['pagado', 'enviado', 'completado', 'confirmado'];
+        const estadosAnterioresQueNoGeneranVenta = ['pendiente', 'cancelado', 'anulado'];
+        
+        if (estadosQueGeneranVenta.includes(estado.toLowerCase()) && 
+            estadosAnterioresQueNoGeneranVenta.includes(estadoAnterior.toLowerCase())) {
+            
+            console.log(`Intentando registrar venta automática para pedido ${idPedido}`);
+            
+            const resultadoVenta = await ventasController.registrarVentaAutomatica(idPedido, connection);
+            
+            if (resultadoVenta.success) {
+                console.log(`✅ Venta registrada automáticamente - ID: ${resultadoVenta.idVenta}`);
+            } else if (!resultadoVenta.message.includes("Ya existe")) {
+                console.warn(`⚠️ Advertencia al registrar venta automática: ${resultadoVenta.message}`);
+                // No cancelar la transacción, solo advertir
+            } else {
+                console.log(`ℹ️ La venta ya existe para este pedido`);
+            }
+        }
+
+        await connection.query("COMMIT");
+        
+        res.json({
+            success: true,
+            message: "Estado del pedido actualizado exitosamente",
+            estadoAnterior,
+            estadoNuevo: estado,
+            ventaRegistrada: estadosQueGeneranVenta.includes(estado.toLowerCase()),
+            result
+        });
+        
+    } catch (error) {
+        await connection.query("ROLLBACK");
+        console.error("ERROR 500:", error);
+        res.status(500).json({ 
+            success: false,
+            message: "Error al actualizar el estado del pedido",
+            error: error.message 
+        });
+    } 
+};
+
+// FUNCIÓN CORREGIDA: Crear pedido con mejor manejo de ventas
 const postPedido = async (req, res) => {
     const connection = await getConnection();
     
@@ -21,6 +101,15 @@ const postPedido = async (req, res) => {
             datosPago // Datos adicionales para el pago
         } = req.body;
 
+        // Validaciones básicas
+        if (!idUsuario || !infopersona || !total) {
+            await connection.query("ROLLBACK");
+            return res.status(400).json({
+                success: false,
+                message: "Faltan datos obligatorios: idUsuario, infopersona y total son requeridos"
+            });
+        }
+
         // Insertar pedido principal
         const pedido = {
             estado: estado || 'pendiente',
@@ -35,12 +124,32 @@ const postPedido = async (req, res) => {
             idUsuario: parseInt(idUsuario)
         };
 
+        console.log("Creando pedido:", pedido);
+        
         const pedidoResult = await connection.query("INSERT INTO pedidos SET ?", pedido);
         const idPedido = pedidoResult.insertId;
 
+        console.log(`Pedido creado con ID: ${idPedido}`);
+
         // Insertar detalles del pedido si se proporcionaron
         if (items && Array.isArray(items) && items.length > 0) {
+            console.log(`Procesando ${items.length} items del pedido`);
+            
             for (const item of items) {
+                // Verificar stock disponible antes de procesar
+                const stockDisponible = await connection.query(
+                    "SELECT cantidad FROM producto WHERE idProducto = ?",
+                    [item.idProducto]
+                );
+
+                if (stockDisponible.length === 0) {
+                    throw new Error(`Producto con ID ${item.idProducto} no existe`);
+                }
+
+                if (stockDisponible[0].cantidad < parseInt(item.cantidad)) {
+                    throw new Error(`Stock insuficiente para producto ID ${item.idProducto}. Disponible: ${stockDisponible[0].cantidad}, Solicitado: ${item.cantidad}`);
+                }
+
                 const detalle = {
                     idPedido: idPedido,
                     idProducto: parseInt(item.idProducto),
@@ -55,16 +164,24 @@ const postPedido = async (req, res) => {
                 await connection.query("INSERT INTO detallepedido SET ?", detalle);
 
                 // Actualizar stock del producto
-                await connection.query(
-                    "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ? AND cantidad >= ?",
-                    [item.cantidad, item.idProducto, item.cantidad]
+                const updateResult = await connection.query(
+                    "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ?",
+                    [item.cantidad, item.idProducto]
                 );
+
+                if (updateResult.affectedRows === 0) {
+                    throw new Error(`No se pudo actualizar el stock del producto ID ${item.idProducto}`);
+                }
             }
         }
 
         // Crear registro de pago si se proporcionaron los datos
         let idPago = null;
+        let ventaRegistrada = false;
+        
         if (datosPago) {
+            console.log("Procesando pago:", datosPago.paymentMethod);
+            
             // Buscar el ID correcto de la forma de pago
             let formaPagoId = getFormaPagoId(datosPago.paymentMethod);
             
@@ -87,16 +204,43 @@ const postPedido = async (req, res) => {
 
             const pagoResult = await connection.query("INSERT INTO pagos SET ?", pago);
             idPago = pagoResult.insertId;
+
+            console.log(`Pago registrado con ID: ${idPago}`);
+
+            // CORREGIDO: Actualizar el estado del pedido a 'pagado' cuando hay pago exitoso
+            await connection.query(
+                "UPDATE pedidos SET estado = 'pagado' WHERE idPedido = ?",
+                [idPedido]
+            );
+
+            // **Registrar venta automáticamente cuando hay pago exitoso**
+            console.log("Registrando venta automática...");
+            
+            const resultadoVenta = await ventasController.registrarVentaAutomatica(idPedido, connection);
+            
+            if (resultadoVenta.success) {
+                ventaRegistrada = true;
+                console.log(`✅ Venta registrada automáticamente - ID: ${resultadoVenta.idVenta}`);
+            } else {
+                console.warn(`⚠️ Advertencia al registrar venta automática: ${resultadoVenta.message}`);
+                // No cancelar la transacción por esto
+            }
         }
 
         await connection.query("COMMIT");
+        console.log("Transacción completada exitosamente");
         
         res.json({
             success: true,
-            message: "Pedido y pago creados exitosamente",
+            message: "Pedido creado exitosamente",
             idPedido: idPedido,
             idPago: idPago,
-            pedido: pedidoResult
+            ventaRegistrada,
+            estado: datosPago ? 'pagado' : (estado || 'pendiente'),
+            pedido: {
+                idPedido,
+                ...pedido
+            }
         });
 
     } catch (error) {
@@ -105,9 +249,10 @@ const postPedido = async (req, res) => {
         res.status(500).json({ 
             success: false,
             message: "Error al crear el pedido", 
-            error: error.message 
+            error: error.message,
+            details: error.stack
         });
-    }
+    } 
 };
 
 // Función helper para obtener el ID de la forma de pago
@@ -220,30 +365,6 @@ const getPedidoDetalle = async (req, res) => {
     }
 };
 
-const putPedidoEstado = async (req, res) => {
-    try {
-        const { idPedido } = req.params;
-        const { estado } = req.body;
-
-        const connection = await getConnection();
-        console.log("Conexión obtenida [PUT /pedido/:id/estado]");
-        
-        const result = await connection.query(
-            "UPDATE pedidos SET estado = ? WHERE idPedido = ?", 
-            [estado, idPedido]
-        );
-        
-        res.json({
-            success: true,
-            message: "Estado del pedido actualizado exitosamente",
-            result
-        });
-    } catch (error) {
-        console.error("ERROR 500:", error);
-        res.status(500).json({ message: "Error al actualizar el estado del pedido" });
-    }
-};
-
 
 const getPedidosTodo = async (req, res) => {
     try {
@@ -260,8 +381,6 @@ const getPedidosTodo = async (req, res) => {
         });
     }
 };
-
-
 
 export const methodHTPP = {
     postPedido,

@@ -8,6 +8,8 @@ import tecnologiaRoutes from "./routers/tecnologia.routes.js"
 import pedidosRoutes from "./routers/pedidos.routes.js"
 import pagosRoutes from "./routers/pagos.routes.js"
 import getHistorialCompra from "./routers/historialCliente.routes.js"
+import ventasRoutes from "./routers/ventas.routes.js";
+
 
 
 
@@ -54,6 +56,8 @@ app.use("/", getHistorialCompra)
 
 
 
+/*Ventas */
+app.use("/api/ventas", ventasRoutes);
 
 
 

@@ -28,6 +28,14 @@ const urlPagoEstado = "http://localhost:8000/api/pagos/:idPago/estado";
 const urlPagosTodo = "http://localhost:8000/api/pagos/MostrarP";
 const urlPagosCount = "http://localhost:8000/api/pagos/count";
 
+
+//Ventas API 
+const urlVentas = "http://localhost:8000/api/ventas";
+const urlVentasRangoFechas = "http://localhost:8000/api/ventas/rango-fechas";
+const urlVentasStats = "http://localhost:8000/api/ventas/estadisticas";
+const urlVentasUsuario = "http://localhost:8000/api/ventas/usuario/:idUsuario";
+const urlVentaEstado = "http://localhost:8000/api/ventas/:idVenta/estado";
+
 //Usuarios CRUD
 
 export const registrarUsuario = async (datosUsuario) => {
@@ -388,3 +396,123 @@ export async function getHistorialCompras() {
     }
 }
 
+// Crear nueva venta
+export const crearVenta = async (datosVenta) => {
+    try {
+        const response = await fetch(`${urlVentas}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datosVenta)
+        });
+        
+        const resultado = await response.json();
+        return resultado;
+        
+    } catch (error) {
+        console.error("Error al crear la venta:", error);
+        throw error;
+    }
+}
+
+// Obtener todas las ventas
+export const obtainVentas = async () => {
+    try {
+        const resultado = await fetch(urlVentas);
+        if (!resultado.ok) {
+            throw new Error(`Error HTTP: ${resultado.status}`);
+        }
+        const ventas = await resultado.json();
+        return ventas;
+    } catch (error) {
+        console.error("Error al obtener las ventas:", error);
+        throw error;
+    }
+}
+
+// Obtener ventas por rango de fechas
+export const obtainVentasPorFecha = async (fechaInicio, fechaFin) => {
+    try {
+        const url = `${urlVentasRangoFechas}?fecha_inicio=${fechaInicio}&fecha_fin=${fechaFin}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const resultado = await response.json();
+        return resultado;
+    } catch (error) {
+        console.error("Error al obtener ventas por fecha:", error);
+        throw error;
+    }
+}
+
+// Obtener estadísticas de ventas
+export const obtainVentasStats = async () => {
+    try {
+        const response = await fetch(urlVentasStats);
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const stats = await response.json();
+        return stats;
+    } catch (error) {
+        console.error("Error al obtener estadísticas de ventas:", error);
+        throw error;
+    }
+}
+
+// Obtener ventas por usuario
+export const obtenerVentasPorUsuario = async (idUsuario) => {
+    try {
+        const url = urlVentasUsuario.replace(':idUsuario', idUsuario);
+        const resultado = await fetch(url);
+        
+        if (!resultado.ok) {
+            throw new Error(`Error HTTP: ${resultado.status}`);
+        }
+        
+        const ventas = await resultado.json();
+        return ventas;
+    } catch (error) {
+        console.error("Error al obtener las ventas del usuario:", error);
+        throw error;
+    }
+}
+
+// Actualizar estado de una venta
+export const actualizarEstadoVenta = async (idVenta, estado_venta) => {
+    try {
+        const url = urlVentaEstado.replace(':idVenta', idVenta);
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ estado_venta })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+         if (response.ok) {
+            // Refrescar la página después de 1 segundo
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            console.error("❌ Error en la actualización:", resultado);
+        }
+        
+        const resultado = await response.json();
+        return resultado;
+        
+    } catch (error) {
+        console.error("Error al actualizar el estado de la venta:", error);
+        throw error;
+    }
+}

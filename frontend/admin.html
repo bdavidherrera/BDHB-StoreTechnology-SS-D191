@@ -10,7 +10,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" href="css/Admin.css" />
-    <title>AdminDasboart</title>
+    <title>AdminDashboard</title>
 </head>
 
 <body>
@@ -24,7 +24,10 @@
                 <a href="#pedidos"><i class="fas fa-shopping-cart"></i> Pedidos</a>
             </li>
             <li>
-                <a href="#pagos"><i class="fas fa-credit-card"></i> Ventas</a>
+                <a href="#pagos"><i class="fas fa-credit-card"></i> Pagos</a>
+            </li>
+            <li>
+                <a href="#ventas"><i class="fas fa-chart-line"></i> Ventas</a>
             </li>
             <button id="btnCerrarSesion" class="btn-add">
                 <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -96,7 +99,7 @@
 
         <!-- Sección Pagos -->
         <section id="pagos" class="card seccion-content">
-            <h2>Ventas Registradas</h2>
+            <h2>Pagos Registrados</h2>
             <p id="countPagos"></p>
             <div class="table-responsive">
                 <table class="table">
@@ -124,9 +127,145 @@
                 </table>
             </div>
         </section>
+
+        <!-- Sección Ventas -->
+        <section id="ventas" class="card seccion-content">
+            <div class="ventas-header">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-chart-line"></i> Gestión de Ventas</h2>
+                    <div class="ventas-actions">
+                        <button class="btn btn-outline-success" id="btnExportarVentas">
+                            <i class="fas fa-download"></i> Exportar CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Estadísticas Generales -->
+                <div id="estadisticasGenerales" class="estadisticas-container mb-4">
+                    <!-- Las estadísticas se cargarán aquí dinámicamente -->
+                </div>
+
+                <!-- Filtros de Fecha -->
+                <div class="filtros-ventas card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-filter"></i> Filtrar Ventas por Fecha</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="fechaInicio">
+                                        <i class="fas fa-calendar-alt"></i> Fecha Inicio
+                                    </label>
+                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="fechaFin">
+                                        <i class="fas fa-calendar-alt"></i> Fecha Fin
+                                    </label>
+                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-primary mr-2" id="btnBuscarFechas">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="btnLimpiarFiltros">
+                                            <i class="fas fa-eraser"></i> Limpiar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Estadísticas del Período -->
+                        <div id="estadisticasPeriodo" style="display: none;">
+                            <!-- Se mostrarán las estadísticas del período filtrado -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="cargandoVentas" class="text-center py-4" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando ventas...</p>
+            </div>
+
+            <!-- Tabla de Ventas -->
+            <div class="table-responsive">
+                <table class="table table-hover ventas-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Pedido</th>
+                            <th>Productos</th>
+                            <th>Subtotal</th>
+                            <th>Descuentos</th>
+                            <th>Impuestos</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVentas">
+                        <!-- Las ventas se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
+    <!-- Modal para Detalle de Venta -->
+    <div class="modal fade" id="modalDetalleVenta" tabindex="-1" role="dialog" aria-labelledby="modalDetalleVentaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalDetalleVentaLabel">
+                        <i class="fas fa-receipt"></i> Detalle de Venta
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="contenidoDetalleVenta">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Modal para Cambiar Estado de Venta -->
+    <div class="modal fade" id="modalCambiarEstado" tabindex="-1" role="dialog" aria-labelledby="modalCambiarEstadoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="modalCambiarEstadoLabel">
+                        <i class="fas fa-edit"></i> Cambiar Estado de Venta
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="contenidoCambiarEstado">
+                    <!-- El contenido se cargará dinámicamente -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
@@ -134,6 +273,7 @@
     <script type="module" src="js/Admin/productosAdmin.js"></script>
     <script type="module" src="js/pedidos.js"></script>
     <script type="module" src="js/pagos.js"></script>
+    <script type="module" src="js/ventas.js"></script>
     <script>
         $(document).ready(function () {
             // Verificar sesión de administrador
@@ -155,8 +295,29 @@
                     window.location.href = "login.html";
                 }
             });
+
+            // Manejar navegación entre secciones
+            $('.sidebar a[href^="#"]').click(function(e) {
+                e.preventDefault();
+                const target = $(this).attr('href');
+                
+                // Ocultar todas las secciones
+                $('.seccion-content').hide();
+                
+                // Mostrar la sección seleccionada
+                $(target).show();
+                
+                // Actualizar clase activa en sidebar
+                $('.sidebar a').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Mostrar productos por defecto
+            $('#productos').show();
+            $('.sidebar a[href="#productos"]').addClass('active');
         });
     </script>
+
     <!-- Modal Agregar Producto -->
     <div class="modal fade" id="modalAgregarProducto" tabindex="-1" role="dialog"
         aria-labelledby="modalAgregarProductoLabel" aria-hidden="true">
@@ -280,7 +441,6 @@
             </div>
         </div>
     </div>
-    <!-- Insertar este código justo después del modal "modalAgregarProducto" en admin.html -->
 
     <!-- Modal Actualizar Producto -->
     <div class="modal fade" id="modalActualizarProducto" tabindex="-1" role="dialog"
@@ -429,254 +589,6 @@
         </div>
     </div>
 
-    <style>
-        /* Estilos específicos para el modal de actualización */
-        #modalActualizarProducto .modal-header {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-            border-bottom: none;
-        }
-
-        #modalActualizarProducto .modal-header .close {
-            color: white;
-            opacity: 0.8;
-        }
-
-        #modalActualizarProducto .modal-header .close:hover {
-            opacity: 1;
-            color: white;
-        }
-
-        /* Contenedor de imagen actual */
-        .current-image-container {
-            background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .current-image-container:hover {
-            border-color: #f39c12;
-            background: #fff8e1;
-        }
-
-        /* Imagen actual */
-        .current-image {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 8px;
-            border: 3px solid transparent;
-            background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #f39c12, #e67e22) border-box;
-            box-shadow: 0 5px 20px rgba(243, 156, 18, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .current-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
-        }
-
-        /* Preview de nueva imagen */
-        .preview-image {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 8px;
-            border: 3px solid transparent;
-            background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #2ecc71, #27ae60) border-box;
-            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.2);
-            transition: all 0.3s ease;
-            animation: fadeInScale 0.3s ease-out;
-        }
-
-        .preview-image:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
-        }
-
-        /* Animación para la nueva imagen */
-        @keyframes fadeInScale {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        /* Preview container */
-        #imagenPreviewActualizar {
-            background: #f0fff4;
-            border: 2px dashed #2ecc71;
-            border-radius: 12px;
-            padding: 1rem;
-            text-align: center;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Botones específicos para actualizar */
-        .btn-warning.btn-lg {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            border: none;
-            color: white;
-        }
-
-        .btn-warning.btn-lg:hover {
-            background: linear-gradient(135deg, #e67e22, #d35400);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
-        }
-
-        /* Form actions */
-        .form-actions {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 2px solid #f1f3f4;
-        }
-
-        .form-actions .d-flex {
-            gap: 1rem;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            #modalActualizarProducto .modal-dialog {
-                max-width: 95vw;
-                margin: 1rem;
-            }
-
-            .current-image,
-            .preview-image {
-                max-width: 150px;
-                max-height: 120px;
-            }
-
-            .form-actions .d-flex {
-                flex-direction: column;
-            }
-
-            .btn-lg {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-        }
-    </style>
-
-    <script>
-        // Configurar el selector de imagen para el modal de actualización
-        document.addEventListener('DOMContentLoaded', function () {
-            const inputImagenActualizar = document.getElementById('imagenActualizar');
-
-            if (inputImagenActualizar) {
-                inputImagenActualizar.addEventListener('change', function () {
-                    const file = this.files[0];
-                    const labelActualizar = this.nextElementSibling;
-                    const previewActualizar = document.getElementById('imagenPreviewActualizar');
-                    const previewImgActualizar = document.getElementById('previewImgActualizar');
-                    const nombreArchivoActualizar = document.getElementById('nombreArchivoActualizar');
-
-                    if (file) {
-                        // Actualizar el label con el nombre del archivo
-                        if (labelActualizar) {
-                            labelActualizar.textContent = file.name;
-                        }
-
-                        // Mostrar información del archivo
-                        if (nombreArchivoActualizar) {
-                            nombreArchivoActualizar.textContent = file.name;
-                        }
-
-                        // Validar tipo de archivo
-                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                        if (validTypes.includes(file.type)) {
-                            this.classList.remove('is-invalid');
-                            this.classList.add('is-valid');
-
-                            // Crear preview de la imagen
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                if (previewImgActualizar) {
-                                    previewImgActualizar.src = e.target.result;
-                                }
-                                if (previewActualizar) {
-                                    previewActualizar.style.display = 'block';
-                                }
-                            };
-                            reader.readAsDataURL(file);
-
-                        } else {
-                            this.classList.add('is-invalid');
-                            this.classList.remove('is-valid');
-                            if (previewActualizar) {
-                                previewActualizar.style.display = 'none';
-                            }
-                            alert('Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF, WEBP)');
-                            this.value = '';
-                            if (labelActualizar) {
-                                labelActualizar.textContent = 'Seleccionar nueva imagen...';
-                            }
-                        }
-                    } else {
-                        if (labelActualizar) {
-                            labelActualizar.textContent = 'Seleccionar nueva imagen...';
-                        }
-                        if (previewActualizar) {
-                            previewActualizar.style.display = 'none';
-                        }
-                    }
-                });
-            }
-        });
-
-        // Función para limpiar el formulario de actualización
-        function limpiarFormularioActualizar() {
-            const formulario = document.getElementById('formActualizarProducto');
-            if (formulario) {
-                // No resetear el formulario completo para mantener la imagen actual
-                // Solo limpiar la selección de nueva imagen
-                const inputImagen = document.getElementById('imagenActualizar');
-                const labelImagen = inputImagen ? inputImagen.nextElementSibling : null;
-                const preview = document.getElementById('imagenPreviewActualizar');
-
-                if (inputImagen) {
-                    inputImagen.value = '';
-                    inputImagen.classList.remove('is-valid', 'is-invalid');
-                }
-                if (labelImagen) {
-                    labelImagen.textContent = 'Seleccionar nueva imagen...';
-                }
-                if (preview) {
-                    preview.style.display = 'none';
-                }
-
-                // Remover clases de validación de otros campos
-                formulario.querySelectorAll('.form-control').forEach(input => {
-                    if (input.id !== 'imagenActualizar') {
-                        input.classList.remove('is-invalid');
-                    }
-                });
-            }
-        }
-    </script>
-
     <!-- JavaScript para el modal -->
     <script>
         $(document).ready(function () {
@@ -766,125 +678,204 @@
                 $(this).val(0);
             }
         });
-
-        // Ejemplo de manejo del envío del formulario
-        $("#formAgregarProducto").on("submit", function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const archivo = $("#imagen")[0].files[0];
-
-            if (archivo) {
-                console.log("Archivo seleccionado:", archivo.name);
-                console.log("Tipo de archivo:", archivo.type);
-                console.log("Tamaño del archivo:", archivo.size, "bytes");
-
-                // Aquí puedes enviar el FormData con el archivo a tu servidor
-                // O simplemente usar el nombre del archivo como en tu código original
-                alert("Formulario enviado con imagen: " + archivo.name);
-            } else {
-                alert("Por favor seleccione una imagen");
-            }
-        });
     </script>
 
+    <!-- Estilos CSS para Ventas -->
     <style>
-        /* Estilos adicionales para el modal */
-        .modal-header {
+        /* Estilos para la sección de ventas */
+        .ventas-header {
+            margin-bottom: 2rem;
+        }
+
+        .estadisticas-container {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-bottom: none;
-        }
-
-        .modal-header .close {
-            color: white;
-            opacity: 0.8;
-        }
-
-        .modal-header .close:hover {
-            opacity: 1;
-            color: white;
-        }
-
-        .modal-body {
+            border-radius: 15px;
             padding: 2rem;
+            color: white;
         }
 
-        .form-group label {
-            font-weight: 600;
-            color: #333;
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card.bg-primary {
+            background: linear-gradient(135deg, #4e73df, #2e59d9);
+        }
+
+        .stat-card.bg-success {
+            background: linear-gradient(135deg, #1cc88a, #17a673);
+        }
+
+        .stat-card.bg-info {
+            background: linear-gradient(135deg, #36b9cc, #2c9faf);
+        }
+
+        .stat-card.bg-warning {
+            background: linear-gradient(135deg, #f6c23e, #dda20a);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
             margin-bottom: 0.5rem;
         }
 
-        .form-group label i {
-            color: #667eea;
-            margin-right: 0.5rem;
+        .stat-card .stat-info h4 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
 
-        .form-control:focus,
-        .custom-file-input:focus+.custom-file-label {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        .stat-card .stat-info p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
         }
 
-        .is-valid {
-            border-color: #28a745;
-        }
-
-        .is-invalid {
-            border-color: #dc3545;
-        }
-
-        .custom-file-input.is-valid+.custom-file-label {
-            border-color: #28a745;
-        }
-
-        .custom-file-input.is-invalid+.custom-file-label {
-            border-color: #dc3545;
-        }
-
-        .alert-info {
-            background: linear-gradient(135deg, #e3f2fd, #f0f7ff);
-            border: 1px solid #667eea;
-            color: #333;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #dee2e6;
-            padding: 1rem 2rem;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            border-color: #667eea;
-        }
-
-        .btn-success {
-            background: #28a745;
-            border-color: #28a745;
-        }
-
-        .text-danger {
-            color: #dc3545 !important;
-        }
-
-        /* Estilos para el preview de imagen */
-        #imagenPreview {
-            border: 2px dashed #dee2e6;
+        .stat-card-small {
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            padding: 15px;
+            padding: 1rem;
             text-align: center;
-            background-color: #f8f9fa;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        #previewImg {
+        .filtros-ventas {
+            border-left: 4px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filtros-ventas .card-title {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .ventas-table {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .ventas-table thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .ventas-table .venta-row {
+            transition: all 0.2s ease;
+        }
+
+        .ventas-table .venta-row:hover {
+            background-color: #f8f9fc;
+            transform: translateX(5px);
+        }
+
+        .customer-info strong {
+            color: #5a5c69;
+        }
+
+        .productos-preview {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .monto-total {
+            color: #1cc88a;
+            font-size: 1.1rem;
+        }
+
+        .monto-subtotal {
+            color: #36b9cc;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .action-buttons .btn {
+            transition: all 0.2s ease;
+        }
+
+        .action-buttons .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .no-data {
+            padding: 3rem;
+        }
+
+        .badge-success {
+            background-color: #1cc88a !important;
+        }
+
+        .badge-warning {
+            background-color: #f6c23e !important;
+        }
+
+        .badge-danger {
+            background-color: #e74a3b !important;
+        }
+
+        .ventas-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .estadisticas-container {
+                padding: 1rem;
+            }
+
+            .stat-card {
+                margin-bottom: 0.5rem;
+            }
+
+            .stat-card .stat-info h4 {
+                font-size: 1.5rem;
+            }
+
+            .ventas-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .productos-preview {
+                max-width: 150px;
+            }
+        }
+
+        /* Sidebar styles improvement */
+        .sidebar a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .seccion-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </body>
