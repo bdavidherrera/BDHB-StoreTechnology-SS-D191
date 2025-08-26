@@ -34,7 +34,7 @@ async function obtenerProductos() {
                 <td>${nombreProducto}</td>
                 <td>
                     <div class="rollo-imagen-container">
-                        <img src="img/${imagen}" width="40px" class="rollo-imagen">
+                        <img src="/img/${imagen}" width="40px" class="rollo-imagen">
                     </div>
                 </td>
                 <td>$${Number(valor).toLocaleString('es-CO')}</td>
@@ -85,7 +85,7 @@ function configurarBotonesEditar() {
             const producto = {
                 idProducto,
                 nombreProducto: fila.children[1].textContent.trim(),
-                imagen: fila.querySelector('img').getAttribute('src').replace("img/", ""),
+                imagen: fila.querySelector('img').getAttribute('src').replace("/img/", ""),
                 valor: parseFloat(fila.children[3].textContent.replace(/[^\d]/g, "")), // 👈 fuerza número
                 cantidad: parseInt(fila.children[4].textContent.trim(), 10),
                 informacion: fila.children[5].textContent.trim()
@@ -108,7 +108,7 @@ window.abrirModalActualizarProducto = function (producto) {
     document.getElementById('informacionActualizar').value = producto.informacion;
 
     // Imagen actual
-    document.getElementById('imagenActual').src = `img/${producto.imagen}`;
+    document.getElementById('imagenActual').src = `/img/${producto.imagen}`;
     document.getElementById('nombreImagenActual').textContent = producto.imagen;
 
     // Resetear selección de nueva imagen
@@ -459,7 +459,7 @@ function createProductCardTienda(producto) {
 
     productCard.innerHTML = `
         <div class="product-image">
-            <img src="img/${producto.imagen}" alt="${producto.nombreProducto}" class="product-img">
+            <img src="/img/${producto.imagen}" alt="${producto.nombreProducto}" class="product-img">
         </div>
         <div class="product-info">
             <div class="product-name">${producto.nombreProducto}</div>
